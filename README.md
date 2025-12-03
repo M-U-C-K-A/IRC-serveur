@@ -1,59 +1,250 @@
-# Webserv — Serveur HTTP en C++98
+# ft_irc - Internet Relay Chat Server
 
-## Aperçu
-Webserv est un serveur HTTP écrit en C++98, non-bloquant et piloté par un unique mécanisme d’attente (`poll`, `select`, `epoll` ou `kqueue`). Il sert des sites statiques, gère les méthodes HTTP essentielles (GET, POST, DELETE), les uploads, les pages d’erreur et l’exécution de CGI selon la configuration.
+## 📋 Table des matières
 
-## Objectifs clés
-- Implémenter un serveur HTTP compatible navigateurs (HTTP/1.0 comme référence).
-- Utiliser une boucle d’événements unique et non-bloquante pour toutes les E/S réseau et pipes.
-- Fournir un routage configurable à la manière d’un bloc `server` NGINX.
-- Supporter au minimum GET, POST, DELETE, l’autoindex, redirections, upload et CGI.
+- [Vue d'ensemble](#vue-densemble)
+- [Objectifs du projet](#objectifs-du-projet)
+- [Prérequis](#prérequis)
+- [Compilation](#compilation)
+- [Utilisation](#utilisation)
+- [Documentation](#documentation)
+- [Structure du projet](#structure-du-projet)
+- [Tests](#tests)
 
-## Exécution
+## 🎯 Vue d'ensemble
+
+**ft_irc** est un projet de l'école 42 consistant à implémenter un serveur IRC (Internet Relay Chat) en C++98. L'objectif est de reproduire le fonctionnement d'un serveur IRC capable de gérer plusieurs clients simultanément en utilisant des I/O non-bloquantes.
+
+### Qu'est-ce que IRC ?
+
+Internet Relay Chat est un protocole de communication textuel sur Internet permettant :
+- La communication instantanée en temps réel
+- Les discussions en groupe via des canaux (channels)
+- La communication privée entre deux personnes
+- La gestion de canaux avec opérateurs et utilisateurs
+
+## 🎯 Objectifs du projet
+
+### Partie obligatoire
+
+- ✅ Développer un serveur IRC en C++98
+- ✅ Gérer plusieurs clients simultanément sans blocage
+- ✅ Utiliser un seul `poll()` (ou équivalent) pour toutes les opérations I/O
+- ✅ Communication TCP/IP (v4 ou v6)
+- ✅ Authentification des clients
+- ✅ Support des nicknames et usernames
+- ✅ Gestion des canaux (channels)
+- ✅ Messages privés et messages de canal
+- ✅ Système d'opérateurs et utilisateurs basiques
+
+### Commandes obligatoires
+
+#### Commandes de base
+- **Authentification** : Connexion avec mot de passe
+- **NICK** : Définir un nickname
+- **USER** : Définir un username
+- **JOIN** : Rejoindre un canal
+- **PRIVMSG** : Envoyer des messages privés
+
+#### Commandes opérateur
+- **KICK** : Éjecter un client du canal
+- **INVITE** : Inviter un client au canal
+- **TOPIC** : Modifier ou afficher le thème du canal
+- **MODE** : Changer le mode du canal
+  - `i` : Canal sur invitation uniquement
+  - `t` : Restriction TOPIC pour opérateurs
+  - `k` : Définir/supprimer clé du canal (mot de passe)
+  - `o` : Donner/retirer privilège opérateur
+  - `l` : Limiter le nombre d'utilisateurs
+
+### Partie bonus
+
+- 📁 Envoi de fichiers
+- 🤖 Bot IRC
+
+## 📦 Prérequis
+
+### Compilateur et normes
+- Compilateur C++ compatible C++98
+- `make`
+- Flags de compilation : `-Wall -Wextra -Werror -std=c++98`
+
+### Fonctions autorisées
 ```
-./webserv [chemin/vers/configuration.conf]
+socket, close, setsockopt, getsockname, getprotobyname,
+gethostbyname, getaddrinfo, freeaddrinfo, bind, connect,
+listen, accept, htons, htonl, ntohs, ntohl, inet_addr,
+inet_ntoa, send, recv, signal, sigaction, lseek, fstat,
+fcntl, poll (ou équivalent)
 ```
-- Si l’argument est omis, charger un chemin par défaut (défini par le projet).
-- Plusieurs ports et interfaces peuvent être écoutés selon la configuration.
 
-## Configuration (inspirée de NGINX)
-Dans le fichier de configuration vous pouvez définir :
-- Les paires `interface:port` à écouter (multi-sites).
-- Les pages d’erreur par défaut ou personnalisées.
-- La taille maximale du corps des requêtes.
-- Des règles par route (sans regex) :
-  - Méthodes HTTP acceptées.
-  - Redirections (codes et destinations).
-  - Racine de fichiers (`root`) et fichier index par défaut (`index`).
-  - Activation/désactivation de l’autoindex.
-  - Autorisation et emplacement de stockage des uploads.
-  - Exécution de CGI par extension (ex. `.php`, `.py`).
+### Contraintes
+- ❌ Pas de bibliothèque externe ni Boost
+- ❌ Pas de forking
+- ❌ Pas de communication serveur à serveur
+- ✅ Toutes les I/O doivent être non-bloquantes
+- ✅ Un seul `poll()` (ou équivalent) pour gérer toutes les opérations
 
-## Contraintes et API système autorisées
-- C++98, compilation avec `-Wall -Wextra -Werror -std=c++98`.
-- Pas de bibliothèques externes (ni Boost).
-- Robustesse : ne jamais crasher, ne jamais bloquer indéfiniment.
-- Un seul mécanisme d’attente pour toutes les E/S (lecture et écriture surveillées).
-- Interdiction d’appeler `read/recv` ou `write/send` sur sockets/pipes sans préparation par le mécanisme d’attente.
-- `fork` uniquement pour CGI.
-- Appels système autorisés : `execve, pipe, strerror, gai_strerror, errno, dup, dup2, fork, socketpair, htons, htonl, ntohs, ntohl, select, poll, epoll, kqueue, socket, accept, listen, send, recv, chdir, bind, connect, getaddrinfo, freeaddrinfo, setsockopt, getsockname, getprotobyname, fcntl (macOS: F_SETFL, O_NONBLOCK, FD_CLOEXEC), close, read, write, waitpid, kill, signal, access, stat, open, opendir, readdir, closedir`.
+## 🔨 Compilation
 
-## Tests et validation
-- Comparer le comportement à NGINX (entêtes, codes de statut, réponses).
-- Tester avec `telnet` et via navigateurs.
-- Écrire des tests de charge et de non-régression (Python/Go/C/C++).
-- Fournir des fichiers de configuration et ressources par défaut pour la démonstration.
+```bash
+make
+```
 
-## Notions essentielles du projet
-Voir `NOTIONS.md` pour une explication détaillée des 5 notions clés :
-1. Bases du protocole HTTP.
-2. I/O non-bloquantes et boucle d’événements.
-3. Parsing de requêtes et construction de réponses.
-4. Routage piloté par configuration.
-5. Intégration CGI et gestion des uploads.
+Le Makefile contient les règles suivantes :
+- `make` ou `make all` : Compile le serveur
+- `make clean` : Supprime les fichiers objets
+- `make fclean` : Supprime les fichiers objets et l'exécutable
+- `make re` : Recompile entièrement le projet
 
-## Structure recommandée du code
-Voir `STRUCTURE.md` pour une proposition d’architecture C++98 modulaire avec gestion d’états par connexion et un moteur d’événements unique.
+## 🚀 Utilisation
 
-## Exercices et démonstrations
-Voir `TESTS_ET_EXERCICES.md` pour le tableau récapitulatif des tests à couvrir (statique, autoindex, erreurs, redirections, uploads, CGI, multi-port, DELETE).
+### Lancement du serveur
+
+```bash
+./ircserv <port> <password>
+```
+
+**Arguments :**
+- `port` : Numéro du port d'écoute pour les connexions entrantes
+- `password` : Mot de passe requis pour se connecter au serveur
+
+**Exemple :**
+```bash
+./ircserv 6667 motdepasse123
+```
+
+### Connexion avec un client IRC
+
+Vous pouvez utiliser n'importe quel client IRC compatible (irssi, WeeChat, HexChat, etc.)
+
+**Exemple avec netcat (pour tests basiques) :**
+```bash
+nc 127.0.0.1 6667
+```
+
+**Exemple avec irssi :**
+```bash
+irssi
+/connect 127.0.0.1 6667 motdepasse123
+/nick MonNickname
+/join #moncanal
+```
+
+## 📚 Documentation
+
+La documentation détaillée est organisée dans le dossier `docs/` :
+
+- **[PROTOCOL.md](docs/PROTOCOL.md)** : Explications du protocole IRC
+  - Format des messages
+  - Commandes IRC détaillées
+  - Codes de réponse
+  
+- **[ARCHITECTURE.md](docs/ARCHITECTURE.md)** : Architecture du serveur
+  - Structure du code
+  - Classes et modules
+  - Flux de données
+  
+- **[TECHNICAL.md](docs/TECHNICAL.md)** : Concepts techniques
+  - I/O non-bloquantes
+  - Multiplexage avec poll/select
+  - Gestion des sockets
+  - Parsing des commandes
+  
+- **[IMPLEMENTATION.md](docs/IMPLEMENTATION.md)** : Guide d'implémentation
+  - Étapes de développement
+  - Détails des commandes
+  - Gestion des erreurs
+
+## 📁 Structure du projet
+
+```
+ft_irc/
+├── README.md                 # Ce fichier
+├── Makefile                  # Compilation du projet
+├── fr.subject.txt           # Sujet original
+├── docs/                    # Documentation détaillée
+│   ├── PROTOCOL.md          # Protocole IRC
+│   ├── ARCHITECTURE.md      # Architecture du serveur
+│   ├── TECHNICAL.md         # Concepts techniques
+│   └── IMPLEMENTATION.md    # Guide d'implémentation
+├── srcs/                    # Code source
+│   ├── main.cpp
+│   ├── server/              # Classes serveur
+│   ├── client/              # Classes client
+│   ├── channel/             # Classes canal
+│   └── commands/            # Commandes IRC
+└── includes/                # Fichiers headers
+    └── *.hpp
+```
+
+## 🧪 Tests
+
+### Tests basiques
+
+**Test de connexion fragmentée (avec nc) :**
+```bash
+nc 127.0.0.1 6667
+# Tapez : com
+# Ctrl+D
+# Tapez : man
+# Ctrl+D
+# Tapez : d
+# Ctrl+D
+```
+
+Ce test vérifie que le serveur reconstitue correctement les commandes reçues en plusieurs paquets.
+
+### Points à tester
+
+- ✅ Connexions multiples simultanées
+- ✅ Déconnexions brutales
+- ✅ Commandes fragmentées
+- ✅ Bande passante faible
+- ✅ Données partiellement reçues
+- ✅ Comportement avec de nombreux clients
+- ✅ Gestion des erreurs et cas limites
+
+### Client de référence
+
+Choisir un client IRC comme référence pour les tests :
+- **irssi** (ligne de commande, léger)
+- **WeeChat** (ligne de commande, moderne)
+- **HexChat** (interface graphique)
+
+## 📝 Notes importantes
+
+### MacOS spécifique
+Sur MacOS, utilisez `fcntl()` pour mettre les descripteurs en mode non-bloquant :
+```cpp
+fcntl(fd, F_SETFL, O_NONBLOCK);
+```
+
+### Robustesse
+- Le serveur ne doit **jamais** crasher
+- Toutes les erreurs doivent être gérées proprement
+- Gestion de la mémoire sans fuites
+- Comportement prévisible même en cas de ressources limitées
+
+### Normes de code
+- C++98 strict
+- Préférer les fonctions C++ aux fonctions C quand possible
+- Code propre et lisible
+- Gestion appropriée des erreurs
+
+## 🏆 Évaluation
+
+Le projet sera évalué sur :
+- Conformité avec le sujet
+- Fonctionnement avec un client IRC de référence
+- Gestion correcte des multiples clients
+- Implémentation des commandes obligatoires
+- Gestion des modes de canal
+- Robustesse et gestion d'erreurs
+- Qualité du code
+
+---
+
+**Version du sujet :** 8  
+**Norme :** C++98  
+**Date :** Décembre 2025
