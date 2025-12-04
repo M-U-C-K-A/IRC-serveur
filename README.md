@@ -116,20 +116,33 @@ Le Makefile contient les règles suivantes :
 
 ### Connexion avec un client IRC
 
-Vous pouvez utiliser n'importe quel client IRC compatible (irssi, WeeChat, HexChat, etc.)
+Le client de référence pour tester ce serveur est **irssi**.
 
-**Exemple avec netcat (pour tests basiques) :**
+**Installation d'irssi :**
 ```bash
-nc 127.0.0.1 6667
+# Ubuntu/Debian/Kali
+sudo apt install irssi
+
+# macOS
+brew install irssi
 ```
 
-**Exemple avec irssi :**
+**Connexion avec irssi (recommandé) :**
 ```bash
 irssi
-/connect 127.0.0.1 6667 motdepasse123
-/nick MonNickname
-/join #moncanal
+/connect localhost 6667 motdepasse123
+/nick alice
+/join #general
+/msg #general Bonjour tout le monde !
 ```
+
+**Commandes irssi essentielles :**
+- `/connect <serveur> <port> <password>` - Se connecter au serveur
+- `/nick <pseudo>` - Définir votre pseudonyme
+- `/join <#canal>` - Rejoindre un canal
+- `/msg <#canal|pseudo> <message>` - Envoyer un message
+- `/quit` - Se déconnecter
+- `Alt+[1-9]` - Naviguer entre les fenêtres
 
 ## 📚 Documentation
 
@@ -180,6 +193,38 @@ ft_irc/
 
 ## 🧪 Tests
 
+### Client de référence : irssi
+
+**irssi** est le client IRC de référence pour tester ce projet. C'est un client en ligne de commande léger, puissant et très utilisé.
+
+**Installation :**
+```bash
+sudo apt install irssi  # Ubuntu/Debian/Kali
+brew install irssi      # macOS
+```
+
+**Test rapide :**
+```bash
+# Terminal 1 : Lancer le serveur
+./ircserv 6667 secret123
+
+# Terminal 2 : Se connecter avec irssi
+irssi
+/connect localhost 6667 secret123
+/nick alice
+/join #test
+/msg #test Bonjour !
+/quit
+```
+
+### Script de test automatisé
+
+```bash
+./test_irssi.sh
+```
+
+Ce script affiche toutes les commandes irssi utiles et vérifie que le serveur fonctionne.
+
 ### Tests basiques
 
 **Test de connexion fragmentée (avec nc) :**
@@ -207,10 +252,16 @@ Ce test vérifie que le serveur reconstitue correctement les commandes reçues e
 
 ### Client de référence
 
-Choisir un client IRC comme référence pour les tests :
-- **irssi** (ligne de commande, léger)
+**irssi** est le client IRC de référence pour ce projet :
+- Ligne de commande, léger et rapide
+- Support complet du protocole IRC
+- Très utilisé et bien documenté
+- Parfait pour les tests et l'évaluation
+
+**Alternatives compatibles :**
 - **WeeChat** (ligne de commande, moderne)
 - **HexChat** (interface graphique)
+- **netcat (nc)** (tests basiques seulement)
 
 ## 📝 Notes importantes
 

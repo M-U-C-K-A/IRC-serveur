@@ -1,0 +1,31 @@
+# Compiled objects
+*.o
+*.obj
+objs/
+
+# Executables
+ircserv
+*.exe
+*.out
+
+# Dependencies
+*.d
+
+# IDE/Editor files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Debug files
+*.dSYM/
+*.su
+
+# Test files
+test_client
+test_*
