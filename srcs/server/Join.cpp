@@ -1,7 +1,48 @@
+/*
+** ============================================================================
+**                              JOIN COMMAND
+** ============================================================================
+**
+**         User                  Server                   Channel
+**          |                       |                          |
+**          |   JOIN #channel       |                          |
+**          |---------------------> |                          |
+**          |                       |                          |
+**          |                       | Check if channel exists  |
+**          |                       |                          |
+**          |                       |  YES                 NO  |
+**          |                       |  |                    |   |
+**          |                       |  v                    v   |
+**          |                       |                          |
+**          |                       | Check permissions        |
+**          |                       | - Invite only?           |
+**          |                       | - Password?              |
+**          |                       | - User limit?            |
+**          |                       |                          |
+**          |   :nick JOIN #chan    |                          |
+**          |<--------------------- |------------------------> |
+**          |                       |                          |
+**          |   RPL_NAMREPLY        |                          |
+**          |<--------------------- |                          |
+**          |                       |                          |
+**          |   RPL_ENDOFNAMES      |                          |
+**          |<--------------------- |                          |
+**          v                       v                          v
+**
+**  Flow: User joins -> Channel created/joined -> Names list sent
+**
+** ============================================================================
+*/
+
 #include "../../includes/Server.hpp"
 #include "../../includes/Utils.hpp"
 
-
+/*
+* Handle the JOIN command from a client
+* @param clientFd - The file descriptor of the client sending the JOIN command
+* @param line - The full command line received from the client
+* @return void
+*/
 void Server::handleJoin(const int &clientFd, const std::string &line) {
 	std::vector<std::string> channelName_andkey = parseJoinChannelName(line);
 

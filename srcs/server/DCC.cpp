@@ -1,3 +1,40 @@
+/*
+** ============================================================================
+**                         DCC (Direct Client Connection)
+** ============================================================================
+**
+**      Sender                 Server                    Receiver
+**        |                       |                          |
+**        | PRIVMSG user :DCC     |                          |
+**        | SEND file ip port size|                          |
+**        |---------------------> |                          |
+**        |                       |                          |
+**        |                       | :sender PRIVMSG receiver |
+**        |                       |---------------------->   |
+**        |                       |                          |
+**        |                       |                          | Parse DCC info:
+**        |                       |                          | - filename
+**        |                       |                          | - IP address
+**        |                       |                          | - port
+**        |                       |                          | - file size
+**        |                       |                          |
+**        |                       |      DCC ACCEPT          |
+**        |                       |<----------------------   |
+**        |                       |                          |
+**        |   Direct TCP Connection Established              |
+**        |<===============================================> |
+**        |                                                  |
+**        |            File Transfer (binary)                |
+**        |=================================================>|
+**        |                                                  |
+**
+**                          📁  File Transfer  📁
+**
+**  Flow: DCC request -> Connection info exchanged -> Direct transfer
+**
+** ============================================================================
+*/
+
 #include "../../includes/Server.hpp"
 #include "../../includes/Utils.hpp"
 #include <fstream>

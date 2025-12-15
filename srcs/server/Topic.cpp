@@ -1,3 +1,37 @@
+/*
+** ============================================================================
+**                             TOPIC COMMAND
+** ============================================================================
+**
+**         User                  Server                  Channel
+**          |                       |                          |
+**          |  TOPIC #chan :text    |                          |
+**          |---------------------> |                          |
+**          |                       |                          |
+**          |                       | Check permissions        |
+**          |                       | (+t mode check)          |
+**          |                       |<-----------------------> |
+**          |                       |                          |
+**          |  Two cases:           |                          |
+**          |  1) Query topic       |   Return current topic   |
+**          |     TOPIC #chan       |------------------------> |
+**          |                       |                          |
+**          |  2) Set topic         |   Update topic           |
+**          |     TOPIC #chan :new  |------------------------> |
+**          |                       |                          |
+**          |  :nick TOPIC #chan    |                          |
+**          |<--------------------- |                          |
+**          |                       |                          |
+**          |                       | Broadcast to all members |
+**          |<--------------------- |<------------------------ |
+**          |                       |                          |
+**          v                       v                          v
+**
+**  Flow: User sets/queries topic -> Channel updated -> Members notified
+**
+** ============================================================================
+*/
+
 #include "../../includes/Server.hpp"
 #include "../../includes/Utils.hpp"
 

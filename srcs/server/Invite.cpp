@@ -1,6 +1,40 @@
+/*
+** ============================================================================
+**                            INVITE COMMAND
+** ============================================================================
+**
+**     Operator                Channel                  Target User
+**        |                       |                           |
+**        |   INVITE user #chan   |                           |
+**        |---------------------> |                           |
+**        |                       |                           |
+**        |   Check permissions   |                           |
+**        |<--------------------> |                           |
+**        |                       |                           |
+**        |   Add to invite list  |                           |
+**        |---------------------> |                           |
+**        |                       |                           |
+**        |                       |   :nick INVITE user #chan |
+**        |                       |-------------------------> |
+**        |                       |                           |
+**        | RPL_INVITING          |                           |
+**        |<----------------------|                           |
+**        |                       |                           |
+**        v                       v                           v
+**
+**  Flow: Operator invites user -> User added to invite list -> User notified
+**
+** ============================================================================
+*/
+
 #include "../../includes/Server.hpp"
 #include "../../includes/Utils.hpp"
 
+/*
+* Find a channel by its name
+* @param channelName - The name of the channel to find
+* @return Reference to the Channel object if found, otherwise returns the first channel (scam
+*/
 Channel &Server::findChannelByName(const std::string &channelName) {
 	for (std::vector<Channel>::iterator it = channelList.begin(); it != channelList.end(); ++it) {
 		if (it->getName() == channelName) {
@@ -10,6 +44,12 @@ Channel &Server::findChannelByName(const std::string &channelName) {
 	return (this->channelList.front()); // <------- scam
 }
 
+/*
+* Handle the INVITE command from a client
+* @param clientFd - The file descriptor of the client sending the INVITE command
+* @param line - The full command line received from the client
+* @return void
+*/
 void Server::handleInvite(const int &clientFd, const std::string &line) {
 	const std::string toInvite = getParam(INVITE_CMD_LENGTH, line);
 	bool userExist = false;
@@ -42,7 +82,13 @@ void Server::handleInvite(const int &clientFd, const std::string &line) {
 	processToInvite(clientFd, toInvite, findChannelByName(channelName));
 }
 
-
+/*
+* Process the invitation logic for a user to a channel
+* @param clientFd - The file descriptor of the client sending the INVITE command
+* @param toInvite - The nickname of the user to be invited
+* @param channel - Reference to the Channel object where the user is to be invited
+* @return void
+*/
 void Server::processToInvite(const int &clientFd, const std::string &toInvite, Channel &channel) {
 	if (channel.getInviteOnly()) {
 		if (!channel.isOperator(clientFd)) {
@@ -64,6 +110,13 @@ void Server::processToInvite(const int &clientFd, const std::string &toInvite, C
 	}
 }
 
+/*
+* Notify a user that they have been invited to a channel
+* @param clientFd - The file descriptor of the client sending the INVITE command
+* @param toInvite - The nickname of the user to be invited
+* @param channel - Reference to the Channel object where the user is to be invited
+* @return void
+*/
 void Server::notifyInvite(const int &clientFd, const std::string &toInvite, Channel &channel) {
 	std::string buffer(":");
 

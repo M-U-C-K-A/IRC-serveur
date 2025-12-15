@@ -169,6 +169,8 @@ La documentation détaillée est organisée dans le dossier `docs/` :
   - Détails des commandes
   - Gestion des erreurs
 
+  ![commande](command.png)
+
 ## 📁 Structure du projet
 
 ```

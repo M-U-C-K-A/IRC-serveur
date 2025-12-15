@@ -1,3 +1,37 @@
+/*
+** ============================================================================
+**                              MODE COMMAND
+** ============================================================================
+**
+**     Operator                 Channel                  Settings
+**        |                        |                          |
+**        |  MODE #chan +i         |                          |
+**        |----------------------> |                          |
+**        |                        |                          |
+**        |  Check permissions     |                          |
+**        |  (must be op)          |                          |
+**        |<---------------------- |                          |
+**        |                        |                          |
+**        |                        |  Apply mode change       |
+**        |                        |------------------------> |
+**        |                        |                          |
+**        |  Modes:                |                          |
+**        |   +i : invite-only     |                          |
+**        |   +t : topic restricted|                          |
+**        |   +k : password (key)  |                          |
+**        |   +o : operator        |                          |
+**        |   +l : user limit      |                          |
+**        |                        |                          |
+**        |  RPL_CHANNELMODEIS     |                          |
+**        |<---------------------- |                          |
+**        |                        |                          |
+**        v                        v                          v
+**
+**  Flow: Operator sets mode -> Channel updated -> Members notified
+**
+** ============================================================================
+*/
+
 #include "../../includes/Server.hpp"
 #include "../../includes/Utils.hpp"
 #include <stdlib.h>

@@ -1,3 +1,35 @@
+/*
+** ============================================================================
+**                        PRIVMSG / MESSAGE COMMAND
+** ============================================================================
+**
+**       Sender                 Server                 Receiver
+**         |                       |                        |
+**         |  PRIVMSG target :msg  |                        |
+**         |---------------------> |                        |
+**         |                       |                        |
+**         |                       | Check target type      |
+**         |                       |                        |
+**         |  Channel (#chan)      |     User (nickname)    |
+**         |         |             |           |            |
+**         |         v             |           v            |
+**         |                       |                        |
+**         |  Broadcast to all     |  Send to specific user |
+**         |  channel members      |                        |
+**         |  (except sender)      |                        |
+**         |                       |                        |
+**         |                       | :sender PRIVMSG target |
+**         |                       |----------------------> |
+**         |                       |                        |
+**         |                       |        💬               |
+**         |                       |                        |
+**         v                       v                        v
+**
+**  Flow: Sender -> Server routes -> Receiver(s) get message
+**
+** ============================================================================
+*/
+
 #include "../../includes/Server.hpp"
 #include "../../includes/Utils.hpp"
 
