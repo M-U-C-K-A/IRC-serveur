@@ -1,0 +1,209 @@
+/*
+** ============================================================================
+**                         WHOIS COMMAND - RFC 1459
+** ============================================================================
+**
+**                Query User Information
+**                              |
+**                              v
+**                    +----------------------+
+**                    | WHOIS <nickname>     |
+**                    +----------------------+
+**                              |
+**                              v
+**                    +----------------------+
+**                    | Find user by nickname|
+**                    +----------------------+
+**                         /          \
+**                     Found         Not Found
+**                       |              |
+**                       v              v
+**            +------------------+  ERR_NOSUCHNICK (401)
+**            | Send user info:  |  "No such nick"
+**            | - RPL_WHOISUSER  |
+**            | - RPL_WHOISCHANNELS
+**            | - RPL_WHOISSERVER|
+**            | - RPL_AWAY       |
+**            | - RPL_WHOISOPERATOR
+**            | - RPL_ENDOFWHOIS |
+**            +------------------+
+**                       |
+**                       v
+**                   🔍 Info Sent 🔍
+**
+**  WHOIS Returns:
+**  - Basic info: nick, username, hostname, realname
+**  - Channels user is on
+**  - Server user is connected to
+**  - Away message (if away)
+**  - Operator status (if IRCOP)
+**  - Idle time (optional)
+**
+**  Format: WHOIS <nickname>
+**  Example: WHOIS john
+**
+** ============================================================================
+*/
+
+#include "../../../includes/Server.hpp"
+#include "../../../includes/Utils.hpp"
+#include "../../../includes/IrcReplies.hpp"
+
+/*
+**  ┌─────────────────────────────────────────┐
+**  │  sendRPL_WHOISUSER() - Basic User Info  │
+**  │                                         │
+**  │  RPL_WHOISUSER (311)                    │
+**  │  Format: 311 nick target user host * :real│
+**  └─────────────────────────────────────────┘
+*/
+void Server::sendRPL_WHOISUSER(const int &clientFd, const User &target) {
+	std::string nick = this->Users[clientFd].getNickname();
+	
+	std::string response = ":" + std::string(SERVER_NAME);
+	response +=  311  + nick +  ;
+	response += target.getNickname() +  ;
+	response += target.getUsername() +  ;
+	response += localhost * :;
+	response += target.getRealname() + "
+";
+	
+	send(clientFd, response.c_str(), response.length(), 0);
+}
+
+/*
+**  ┌─────────────────────────────────────────┐
+**  │  sendRPL_WHOISCHANNELS() - Chan List    │
+**  │                                         │
+**  │  RPL_WHOISCHANNELS (319)                │
+**  │  Format: 319 nick target :@#chan1 #chan2│
+**  └─────────────────────────────────────────┘
+*/
+void Server::sendRPL_WHOISCHANNELS(const int &clientFd, int targetFd) {
+	std::string nick = this->Users[clientFd].getNickname();
+	std::string targetNick = this->Users[targetFd].getNickname();
+	
+	// Build channel list
+	std::string chanList = ;
+	for (std::vector<Channel>::iterator chan = channelList.begin(); 
+	     chan != channelList.end(); ++chan) {
+		if (chan->isMember(targetFd)) {
+			if (!chanList.empty())
+				chanList +=  ;
+			if (chan->isOperator(targetFd))
+				chanList += @;
+			chanList += chan->getName();
+		}
+	}
+	
+	if (!chanList.empty()) {
+		std::string response = ":" + std::string(SERVER_NAME);
+		response +=  319  + nick +   + targetNick;
+		response +=  : + chanList + "
+";
+		send(clientFd, response.c_str(), response.length(), 0);
+	}
+}
+
+/*
+**  ┌─────────────────────────────────────────┐
+**  │  sendRPL_WHOISSERVER() - Server Info    │
+**  │                                         │
+**  │  RPL_WHOISSERVER (312)                  │
+**  │  Format: 312 nick target server :info   │
+**  └─────────────────────────────────────────┘
+*/
+void Server::sendRPL_WHOISSERVER(const int &clientFd, const std::string &targetNick) {
+	std::string nick = this->Users[clientFd].getNickname();
+	
+	std::string response = ":" + std::string(SERVER_NAME);
+	response +=  312  + nick +   + targetNick +  ;
+	response += SERVER_NAME;
+	response +=  :ft_irc server\r\n;
+	
+	send(clientFd, response.c_str(), response.length(), 0);
+}
+
+/*
+**  ┌─────────────────────────────────────────┐
+**  │  sendRPL_WHOISOPERATOR() - IRCOP Status │
+**  │                                         │
+**  │  RPL_WHOISOPERATOR (313)                │
+**  │  Format: 313 nick target :is an IRC op  │
+**  └─────────────────────────────────────────┘
+*/
+void Server::sendRPL_WHOISOPERATOR(const int &clientFd, const std::string &targetNick) {
+	std::string nick = this->Users[clientFd].getNickname();
+	
+	std::string response = ":" + std::string(SERVER_NAME);
+	response +=  313  + nick +   + targetNick;
+	response +=  :is an IRC operator\r\n;
+	
+	send(clientFd, response.c_str(), response.length(), 0);
+}
+
+/*
+**  ┌─────────────────────────────────────────┐
+**  │  sendRPL_ENDOFWHOIS() - End of WHOIS    │
+**  │                                         │
+**  │  RPL_ENDOFWHOIS (318)                   │
+**  │  Format: 318 nick target :End of /WHOIS │
+**  └─────────────────────────────────────────┘
+*/
+void Server::sendRPL_ENDOFWHOIS(const int &clientFd, const std::string &targetNick) {
+	std::string nick = this->Users[clientFd].getNickname();
+	
+	std::string response = ":" + std::string(SERVER_NAME);
+	response +=  318  + nick +   + targetNick;
+	response +=  :End of /WHOIS list\r\n;
+	
+	send(clientFd, response.c_str(), response.length(), 0);
+}
+
+/*
+* this fonction will handle the WHOIS command
+* @param clientFd the client file descriptor
+* @param line the line to parse
+* @return void
+*/
+void Server::handleWhois(const int &clientFd, const std::string &line) {
+	size_t pos = line.find(' ');
+	if (pos == std::string::npos) {
+		sendERR_NONICKNAMEGIVEN(clientFd);
+		return;
+	}
+	
+	std::string targetNick = line.substr(pos + 1);
+	if (!targetNick.empty() && targetNick[targetNick.length() - 1] == '\r')
+		targetNick.erase(targetNick.length() - 1);
+	if (!targetNick.empty() && targetNick[targetNick.length() - 1] == '\n')
+		targetNick.erase(targetNick.length() - 1);
+	
+	int targetFd = -1;
+	for (std::map<int, User>::iterator it = this->Users.begin(); 
+	     it != this->Users.end(); ++it) {
+		if (it->second.getNickname() == targetNick) {
+			targetFd = it->first;
+			break;
+		}
+	}
+	
+	if (targetFd == -1) {
+		sendERR_NOSUCHNICK(clientFd, targetNick);
+		return;
+	}
+	
+	sendRPL_WHOISUSER(clientFd, this->Users[targetFd]);
+	sendRPL_WHOISCHANNELS(clientFd, targetFd);
+	sendRPL_WHOISSERVER(clientFd, targetNick);
+	
+	if (this->Users[targetFd].isAway()) {
+		sendRPL_AWAY(clientFd, targetNick, this->Users[targetFd].getAwayMessage());
+	}
+	
+	if (this->Users[targetFd].isOperator()) {
+		sendRPL_WHOISOPERATOR(clientFd, targetNick);
+	}
+	
+	sendRPL_ENDOFWHOIS(clientFd, targetNick);
+}

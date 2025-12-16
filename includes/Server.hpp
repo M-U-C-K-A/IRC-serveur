@@ -83,6 +83,22 @@ public:
 	void	handlePart(const int &clientFd, const std::string &line);
 	void	handleMode(const int & clientFd, const std::string &line);
 	void	handleDCC(const int &clientFd, const std::string &targetNick, const std::string &message);
+	
+	// Query commands
+	void	handleWho(const int &clientFd, const std::string &line);
+	void	handleWhowas(const int &clientFd, const std::string &line);
+	void	handleUserhost(const int &clientFd, const std::string &line);
+	void	handleIson(const int &clientFd, const std::string &line);
+	void	handleStats(const int &clientFd, const std::string &line);
+	void	handleLinks(const int &clientFd, const std::string &line);
+	void	handleAdmin(const int &clientFd, const std::string &line);
+	void	handleInfo(const int &clientFd, const std::string &line);
+	
+	// Maintenance commands
+	void	handleTrace(const int &clientFd, const std::string &line);
+	void	handleError(const int &clientFd, const std::string &line);
+	void	handleUsers(const int &clientFd, const std::string &line);
+	void	handleSummon(const int &clientFd, const std::string &line);
 
 	// KICK
 	const	std::string getUserToKick(const std::string &line) const;
@@ -129,9 +145,82 @@ public:
 	void	sendRPL_TOPIC(const int &clientFd, const Channel &channel);
 	void	sendRPL_NOTOPIC(const int &clientFd, const Channel &channel);
 	void	sendRPL_INVITED(const int &clientFd, const std::string &toInvite, const Channel &channel);
-	void	sendERR_CHANOPRIVSNEEDED(const int &clientFd, const std::string &channelName);
-	void	sendERR_NEEDMOREPARAMS(const int &clientFd, const std::string &command);
-	void	sendERR_NOSUCHCHANNEL(const int &clientFd, const std::string &channelName);
 	void	sendRPL_NAMEREPLY(const int &clientFd, Channel &channel);
 	void	sendRPL_ENDOFNAMES(const int &clientFd, Channel &channel);
+
+	// IrcReplies.hpp - Error and reply functions
+	void sendNumericReply(const int &clientFd, int code, const std::string &params, const std::string &message);
+	void sendERR_NOSUCHNICK(const int &clientFd, const std::string &nickname);
+	void sendERR_NOSUCHSERVER(const int &clientFd, const std::string &servername);
+	void sendERR_NOSUCHCHANNEL(const int &clientFd, const std::string &channel);
+	void sendERR_CANNOTSENDTOCHAN(const int &clientFd, const std::string &channel);
+	void sendERR_TOOMANYCHANNELS(const int &clientFd, const std::string &channel);
+	void sendERR_WASNOSUCHNICK(const int &clientFd, const std::string &nickname);
+	void sendERR_TOOMANYTARGETS(const int &clientFd, const std::string &target);
+	void sendERR_NOORIGIN(const int &clientFd);
+	void sendERR_NORECIPIENT(const int &clientFd, const std::string &command);
+	void sendERR_NOTEXTTOSEND(const int &clientFd);
+	void sendERR_NOTOPLEVEL(const int &clientFd, const std::string &mask);
+	void sendERR_WILDTOPLEVEL(const int &clientFd, const std::string &mask);
+	void sendERR_UNKNOWNCOMMAND(const int &clientFd, const std::string &command);
+	void sendERR_NOMOTD(const int &clientFd);
+	void sendERR_NOADMININFO(const int &clientFd, const std::string &server);
+	void sendERR_FILEERROR(const int &clientFd, const std::string &fileop, const std::string &file);
+	void sendERR_NONICKNAMEGIVEN(const int &clientFd);
+	void sendERR_ERRONEUSNICKNAME(const int &clientFd, const std::string &nick);
+	void sendERR_NICKNAMEINUSE(const int &clientFd, const std::string &nick);
+	void sendERR_NICKCOLLISION(const int &clientFd, const std::string &nick);
+	void sendERR_USERNOTINCHANNEL(const int &clientFd, const std::string &nick, const std::string &channel);
+	void sendERR_NOTONCHANNEL(const int &clientFd, const std::string &channel);
+	void sendERR_USERONCHANNEL(const int &clientFd, const std::string &user, const std::string &channel);
+	void sendERR_NOLOGIN(const int &clientFd, const std::string &user);
+	void sendERR_SUMMONDISABLED(const int &clientFd);
+	void sendERR_USERSDISABLED(const int &clientFd);
+	void sendERR_NOTREGISTERED(const int &clientFd);
+	void sendERR_ALREADYREGISTRED(const int &clientFd);
+	void sendERR_PASSWDMISMATCH(const int &clientFd);
+	void sendERR_YOUREBANNEDCREEP(const int &clientFd);
+	void sendERR_KEYSET(const int &clientFd, const std::string &channel);
+	void sendERR_CHANNELISFULL(const int &clientFd, const std::string &channel);
+	void sendERR_UNKNOWNMODE(const int &clientFd, char c);
+	void sendERR_INVITEONLYCHAN(const int &clientFd, const std::string &channel);
+	void sendERR_BANNEDFROMCHAN(const int &clientFd, const std::string &channel);
+	void sendERR_BADCHANNELKEY(const int &clientFd, const std::string &channel);
+	void sendERR_NOPRIVILEGES(const int &clientFd);
+	void sendERR_CHANOPRIVSNEEDED(const int &clientFd, const std::string &channel);
+	void sendERR_CANTKILLSERVER(const int &clientFd);
+	void sendERR_NOOPERHOST(const int &clientFd);
+	void sendERR_UMODEUNKNOWNFLAG(const int &clientFd);
+	void sendERR_USERSDONTMATCH(const int &clientFd);
+	void sendRPL_NONE(const int &clientFd);
+	void sendRPL_AWAY(const int &clientFd, const std::string &nick, const std::string &message);
+	void sendRPL_USERHOST(const int &clientFd, const std::string &reply);
+	void sendRPL_ISON(const int &clientFd, const std::string &nicks);
+	void sendRPL_UNAWAY(const int &clientFd);
+	void sendRPL_NOWAWAY(const int &clientFd);
+	void sendRPL_WHOISUSER(const int &clientFd, const std::string &nick, const std::string &user, const std::string &host, const std::string &realname);
+	void sendRPL_WHOISSERVER(const int &clientFd, const std::string &nick, const std::string &server, const std::string &serverinfo);
+	void sendRPL_WHOISOPERATOR(const int &clientFd, const std::string &nick);
+	void sendRPL_WHOISIDLE(const int &clientFd, const std::string &nick, int idle);
+	void sendRPL_ENDOFWHOIS(const int &clientFd, const std::string &nick);
+	void sendRPL_WHOISCHANNELS(const int &clientFd, const std::string &nick, const std::string &channels);
+	void sendRPL_LISTSTART(const int &clientFd);
+	void sendRPL_LIST(const int &clientFd, const std::string &channel, int visible, const std::string &topic);
+	void sendRPL_LISTEND(const int &clientFd);
+	void sendRPL_CHANNELMODEIS(const int &clientFd, const std::string &channel, const std::string &mode, const std::string &mode_params);
+	void sendRPL_NOTOPIC(const int &clientFd, const std::string &channel);
+	void sendRPL_VERSION(const int &clientFd, const std::string &version, const std::string &debuglevel, const std::string &server, const std::string &comments);
+	void sendRPL_TIME(const int &clientFd, const std::string &server, const std::string &timestr);
+
+	// AWAY command
+	std::string parseAwayMessage(const std::string &line);
+	void handleAway(const int &clientFd, const std::string &line);
+	
+	// NOTICE command
+	void handleNotice(const int &clientFd, const std::string &line);
+	
+	// PING/PONG commands
+	std::string parsePingToken(const std::string &line);
+	void sendPong(const int &clientFd, const std::string &token);
+	void handlePong(const int &clientFd, const std::string &line);
 };

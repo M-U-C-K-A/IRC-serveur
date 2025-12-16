@@ -55,7 +55,8 @@ SRCS		= main.cpp
 # Core classes
 SRCS		+= User.cpp \
 			   Channel.cpp \
-			   Utils.cpp
+			   Utils.cpp \
+			   IrcReplies.cpp
 
 # Server files
 SRCS		+= server/Server.cpp \
