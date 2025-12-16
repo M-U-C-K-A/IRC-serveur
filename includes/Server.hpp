@@ -45,7 +45,6 @@ private:
 	epoll_event	event;
 	epoll_event	events[MAX_EVENTS];
 	std::map<int, User>	Users;
-	User		ircBot;
 public:
 	Server();
 	Server(const Server &src);
@@ -59,17 +58,18 @@ public:
 	void	runServer();
 	static void	signalHandler(int signum);
 
+	// Helper functions for NICK command
+	bool	isValidNickname(const std::string &nickname);
+	bool	isNicknameTaken(const std::string &nickname, const int &clientFd);
+	void	broadcastNickChange(const int &clientFd, const std::string &oldNick, const std::string &newNick);
+	void	checkUserRegistration(const int &clientFd);
+
 	int 			findIdByName(const std::string &name) const;
 	std::string		findNameById(const int &clientFd) const;
 	Channel			&findChannelByName(const std::string &channelName);
 
-	bool	nickAlreadyInUse(const std::string &nick);
-	void	welcomeUser(const int &code, const std::string &name) const;
 	void	acceptUser();
 	void	parseInput(int userFd);
-	bool	hasPassword() const;
-	void	sendRPL(const int &clientFd, const int code, const std::string &nick, const std::string &message) const;
-	std::vector<std::string> getReqCap(const std::string line);
 
 	void	handleCap(const int &clientFd, const std::string &line);
 	void	handleNick(const int &clientFd, const std::string &line);
@@ -83,23 +83,10 @@ public:
 	void	handleInvite(const int &clientFd, const std::string &line);
 	void	handlePart(const int &clientFd, const std::string &line);
 	void	handleMode(const int & clientFd, const std::string &line);
-	void	handleDCC(const int &clientFd, const std::string &targetNick, const std::string &message);
+
 	
 	// Query commands
 	void	handleWho(const int &clientFd, const std::string &line);
-	void	handleWhowas(const int &clientFd, const std::string &line);
-	void	handleUserhost(const int &clientFd, const std::string &line);
-	void	handleIson(const int &clientFd, const std::string &line);
-	void	handleStats(const int &clientFd, const std::string &line);
-	void	handleLinks(const int &clientFd, const std::string &line);
-	void	handleAdmin(const int &clientFd, const std::string &line);
-	void	handleInfo(const int &clientFd, const std::string &line);
-	
-	// Maintenance commands
-	void	handleTrace(const int &clientFd, const std::string &line);
-	void	handleError(const int &clientFd, const std::string &line);
-	void	handleUsers(const int &clientFd, const std::string &line);
-	void	handleSummon(const int &clientFd, const std::string &line);
 
 	// KICK
 	const	std::string getUserToKick(const std::string &line) const;
@@ -115,7 +102,7 @@ public:
 	void						createChannel(const std::string &channelName, int creatorFd);
 	bool						joinExistingChannel(const std::string &channelName, const std::string &key, int userFd);
 	void		broadcastToChannel(const std::string &channelName, const std::string &message, int senderFd);
-	void		sendChannelError(const int &clientFd, const int code, const std::string &nick, const std::string &channel, const std::string &message) const;
+
 
 	void		handlePrivateMessage(int clientFd, const std::string &line);
 	void		sendPrivateMessage(const std::string &targetNick, const std::string &message, int senderFd);
@@ -133,13 +120,7 @@ public:
 	void	notifyMode(const int &clientFd, const std::string &channelName, const char &mode, const bool status, const std::string &arg);
 	void	notifyPart(const int &clientFd, const std::string &channelName);
 
-	void	sendFile(const int &clientFd, const std::string &targetNick, t_dcc &dccData);
-	void	getFile(const int &clientFd, t_dcc &dccData);
-	t_dcc	getDCCInfo(const std::string &message);
-	int		initDccSocket(t_dcc &dccData);
-	int		openDccSocket(t_dcc &dccData);
-	bool	hasAllDCCData(const t_dcc &dccData);
-	void	notifyDCCsend(const int &clientFd, const std::string &targetNick, const t_dcc &dccData);
+
 
 	void	sendRPL_CHANNELMODEIS(const int &clientFd, const Channel &channel);
 	void	sendRPL_TOPICWHOTIME(const int &clientFd, const Channel &channel);

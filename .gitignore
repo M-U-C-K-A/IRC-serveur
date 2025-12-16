@@ -25,7 +25,3 @@ Thumbs.db
 # Debug files
 *.dSYM/
 *.su
-
-# Test files
-test_client
-test_*

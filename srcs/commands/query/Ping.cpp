@@ -6,7 +6,7 @@
 /*   By: hdelacou <hdelacou@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/12/16 04:04:03 by hdelacou          #+#    #+#             */
-/*   Updated: 2025/12/16 04:04:13 by hdelacou         ###   ########.fr       */
+/*   Updated: 2025/12/16 04:58:45 by hdelacou         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -73,20 +73,16 @@ void Server::handlePing(const int &clientFd, const std::string &line)
 }
 
 /*
-* This function handles PONG replies from clients
-* @param clientFd the client file descriptor
-* @param line the raw command line to parse
-* @return void
+* Handle PONG response from client
+* @param client*Fd the client file descriptor
+* @param line the command line
 */
-void Server::handlePong(const int &clientFd, const std::string &line)
-{
-	std::string token = parsePingToken(line);
-	
-	this->Users[clientFd].updateLastActivity();
-	
-	std::cout << "PONG received from " << this->Users[clientFd].getNickname() 
-	          << " (token: " << token << ")" << std::endl;
+void Server::handlePong(const int &clientFd, const std::string &line) {
+	(void)line;
+	std::cout << "[IRC] Received PONG from client " << clientFd << std::endl;
+	// PONG received, connection is alive
 }
+
 
 /*
 ** ============================================================================

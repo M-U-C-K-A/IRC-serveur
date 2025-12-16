@@ -6,7 +6,7 @@
 /*   By: hdelacou <hdelacou@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/12/16 04:08:42 by hdelacou          #+#    #+#             */
-/*   Updated: 2025/12/16 04:08:45 by hdelacou         ###   ########.fr       */
+/*   Updated: 2025/12/16 05:28:50 by hdelacou         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,23 +20,26 @@
 * @param line the line to parse
 * @return void
 */
-void Server::handlePass(const int &clientFd, const std::string &line)
-{
-	if (this->Users[clientFd].isRegistered())
-	{
+void Server::handlePass(const int &clientFd, const std::string &line) {
+	// Check if already registered
+	if (this->Users[clientFd].getIsRegister()) {
 		sendERR_ALREADYREGISTRED(clientFd);
 		return;
 	}
 
-	std::string password = getParam(PASS_CMD_LENGTH, line);
+	// Extract password from command
+	std::string password = line.substr(5); // Skip "PASS "
+	if (!password.empty() && password[0] == ':')
+		password.erase(0, 1);
 
-	if (password.empty())
-	{
-		sendERR_NEEDMOREPARAMS(clientFd, CMD_PASS);
+	// Validate password
+	if (password.empty() || password != this->password) {
+		sendERR_PASSWDMISMATCH(clientFd);
 		return;
 	}
 
-	this->Users[clientFd].setPassword(password);
+	// Password is correct - mark as having valid password
+	this->Users[clientFd].setHasPass();
 	std::cout << "Password set for user " << clientFd << std::endl;
 }
 

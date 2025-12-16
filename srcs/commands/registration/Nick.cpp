@@ -6,12 +6,14 @@
 /*   By: hdelacou <hdelacou@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/12/16 04:06:15 by hdelacou          #+#    #+#             */
-/*   Updated: 2025/12/16 04:08:19 by hdelacou         ###   ########.fr       */
+/*   Updated: 2025/12/16 04:59:19 by hdelacou         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../../../includes/Server.hpp"
 #include "../../../includes/Utils.hpp"
+#include "../../../includes/IrcReplies.hpp"
+#include <strings.h>
 
 /*
 * This function validates if a nickname is valid
@@ -117,7 +119,7 @@ void Server::broadcastNickChange(const int &clientFd,
 	for (std::vector<Channel>::iterator chan = channelList.begin(); 
 	     chan != channelList.end(); ++chan) {
 		if (chan->isMember(clientFd)) {
-			const std::vector<int> &members = chan->getMembers();
+			const std::vector<int> &members = chan->getAllMembers();
 			for (size_t i = 0; i < members.size(); i++) {
 				if (notified.find(members[i]) == notified.end()) {
 					send(members[i], message.c_str(), message.length(), 0);
@@ -128,50 +130,8 @@ void Server::broadcastNickChange(const int &clientFd,
 	}
 }
 
-/*
-* Error Response Functions for NICK command
-* @param clientFd the client file descriptor
-* @return void
-*/
-void Server::sendERR_NONICKNAMEGIVEN(const int &clientFd) {
-	std::string response = ":";
-	response += SERVER_NAME;
-	response += " 431 * :No nickname given\r\n";
-	
-	send(clientFd, response.c_str(), response.length(), 0);
-}
 
-/*
-* ERR_ERRONEUSNICKNAME (432): Invalid nickname format
-* @param clientFd the client file descriptor
-* @param nick the nickname
-* @return void
-*/
-void Server::sendERR_ERRONEUSNICKNAME(const int &clientFd, const std::string &nick) {
-	std::string response = ":";
-	response += SERVER_NAME;
-	response += " 432 * ";
-	response += nick;
-	response += " :Erroneous nickname\r\n";
-	
-	send(clientFd, response.c_str(), response.length(), 0);
-}
 
-/*
-* ERR_NICKNAMEINUSE (433): Nickname already in use
-* @param clientFd the client file descriptor
-* @param nick the nickname
-* @return void
-*/
-void Server::sendERR_NICKNAMEINUSE(const int &clientFd, const std::string &nick) {
-	std::string response = ":";
-	response += SERVER_NAME;
-	response += " 433 * ";
-	response += nick;
-	response += " :Nickname is already in use\r\n";
-	
-	send(clientFd, response.c_str(), response.length(), 0);
-}
 
 /*
 ** ============================================================================

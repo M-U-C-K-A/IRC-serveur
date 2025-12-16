@@ -6,7 +6,7 @@
 #    By: hdelacou <hdelacou@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/12/16 02:31:44 by hdelacou          #+#    #+#              #
-#    Updated: 2025/12/16 04:10:23 by hdelacou         ###   ########.fr        #
+#    Updated: 2025/12/16 04:58:05 by hdelacou         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -32,13 +32,36 @@ INCDIR      := includes
 
 # Root sources (srcs/)
 SRCS_ROOT   := main.cpp \
+               Server.cpp \
                User.cpp \
                Channel.cpp \
                Utils.cpp \
                IrcReplies.cpp
 
-# Combine sources with paths
-SRCS        := $(addprefix $(SRCDIR)/, $(SRCS_ROOT))
+# ESSENTIAL Channel commands only
+SRCS_CHANNEL := commands/channel/Join.cpp \
+                commands/channel/Part.cpp \
+                commands/channel/Kick.cpp \
+                commands/channel/Topic.cpp
+
+# ESSENTIAL Messaging - PRIVMSG and NOTICE only
+SRCS_MSG    := commands/messaging/Privmsg.cpp \
+               commands/messaging/Notice.cpp
+
+# ESSENTIAL Registration - authentication flow
+SRCS_REG    := commands/registration/Nick.cpp \
+               commands/registration/Pass.cpp \
+               commands/registration/User.cpp
+
+# ESSENTIAL Query - keep-alive and basic queries
+SRCS_QUERY  := commands/query/Ping.cpp
+
+# Combine sources with paths (ONLY ESSENTIALS)
+SRCS        := $(addprefix $(SRCDIR)/, $(SRCS_ROOT)) \
+               $(addprefix $(SRCDIR)/, $(SRCS_CHANNEL)) \
+               $(addprefix $(SRCDIR)/, $(SRCS_MSG)) \
+               $(addprefix $(SRCDIR)/, $(SRCS_REG)) \
+               $(addprefix $(SRCDIR)/, $(SRCS_QUERY))
 
 # Objects and Dependencies
 OBJS        := $(patsubst $(SRCDIR)/%.cpp, $(OBJDIR)/%.o, $(SRCS))

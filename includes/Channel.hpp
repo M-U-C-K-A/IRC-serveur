@@ -32,7 +32,7 @@ public:
 	Channel &operator=(const Channel &src);
 	~Channel();
 
-	int				user_joined;
+
 
 	bool	canJoin(int fd, const std::string &key, std::string &reason) const;
 	bool	addMember(int fd);
@@ -63,7 +63,6 @@ public:
 	const std::string	&getName() const;
 	std::vector<int>	getAllMembers() const;
 	const int 			&getHost() const;
-	bool				isSpace();
 
 	bool	getInviteOnly() const;
 	bool	getTopicOpOnly() const;

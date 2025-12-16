@@ -5,51 +5,14 @@
 /*                                                    +:+ +:+         +:+     */
 /*   By: hdelacou <hdelacou@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/12/16 04:10:07 by hdelacou          #+#    #+#             */
-/*   Updated: 2025/12/16 04:10:10 by hdelacou         ###   ########.fr       */
+/*   Created: 2025/12/16 04:00:00 by hdelacou          #+#    #+#             */
+/*   Updated: 2025/12/16 04:57:48 by hdelacou         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../../../includes/Server.hpp"
 #include "../../../includes/Utils.hpp"
-
-/*
-* This function parses the USER command
-* @param line the raw command line to parse
-* @return UserParams struct containing username and realname
-*/
-struct UserParams {
-	std::string username;
-	std::string realname;
-};
-
-UserParams Server::parseUserCommand(const std::string &line) {
-	UserParams params;
-	
-	size_t pos = USER_CMD_LENGTH;
-	if (pos >= line.length())
-		return params;
-
-	while (pos < line.length() && line[pos] == ' ')
-		pos++;
-
-	size_t usernameEnd = line.find(' ', pos);
-	if (usernameEnd == std::string::npos)
-		return params;
-	
-	params.username = line.substr(pos, usernameEnd - pos);
-
-	size_t realnameStart = line.find(':', pos);
-	if (realnameStart != std::string::npos) {
-		params.realname = line.substr(realnameStart + 1);
-		if (!params.realname.empty() && params.realname[params.realname.length() - 1] == '\r')
-			params.realname.erase(params.realname.length() - 1);
-		if (!params.realname.empty() && params.realname[params.realname.length() - 1] == '\n')
-			params.realname.erase(params.realname.length() - 1);
-	}
-
-	return params;
-}
+#include "../../../includes/IrcReplies.hpp"
 
 /*
 * this fonction will handle the USER command
@@ -57,163 +20,42 @@ UserParams Server::parseUserCommand(const std::string &line) {
 * @param line the line to parse
 * @return void
 */
-void Server::handleUser(const int &clientFd, const std::string &line) {
-	if (this->Users[clientFd].isRegistered()) {
+void Server::handleUsername(const int &clientFd, const std::string &line) {
+	User &user = this->Users[clientFd];
+
+	// Check if already registered
+	if (user.getIsRegister()) {
 		sendERR_ALREADYREGISTRED(clientFd);
 		return;
 	}
 
-	UserParams params = parseUserCommand(line);
-
-	if (params.username.empty() || params.realname.empty()) {
-		sendERR_NEEDMOREPARAMS(clientFd, CMD_USER);
+	// Parse USER command: USER <username> <hostname> <servername> :<realname>
+	std::string params = line.substr(5); // Skip "USER "
+	if (params.empty()) {
+		sendERR_NEEDMOREPARAMS(clientFd, "USER");
 		return;
 	}
 
-	this->Users[clientFd].setUsername(params.username);
-	this->Users[clientFd].setRealname(params.realname);
-
-	std::cout << "User info set for fd " << clientFd 
-	          << ": username=" << params.username 
-	          << ", realname=" << params.realname << std::endl;
-
-	checkUserRegistration(clientFd);
-}
-
-/*
-* This function checks if user registration is complete
-* Checks if user has provided PASS, NICK, and USER
-* If complete, sends welcome messages
-* @param clientFd the client file descriptor
-* @return void
-*/
-void Server::checkUserRegistration(const int &clientFd) {
-	User &user = this->Users[clientFd];
-
-	// Check if all required information is present
-	if (user.getPassword().empty() || 
-	    user.getNickname().empty() || 
-	    user.getUsername().empty() || 
-	    user.getRealname().empty()) {
-		// Not yet fully registered
+	// Extract username (first parameter)
+	size_t spacePos = params.find(' ');
+	std::string username = (spacePos != std::string::npos) ? params.substr(0, spacePos) : params;
+	
+	if (username.empty()) {
+		sendERR_NEEDMOREPARAMS(clientFd, "USER");
 		return;
 	}
 
-	// Mark user as registered
-	user.setRegistered(true);
+	// Set username
+	user.setUsername(username);
+	user.setHasUsername();
 
-	// Send welcome messages
-	sendWelcomeMessages(clientFd);
+	std::cout << "[IRC] User " << clientFd << " set username: " << username << std::endl;
 
-	std::cout << "User " << user.getNickname() 
-	          << " (fd: " << clientFd << ") fully registered!" << std::endl;
+	// Try to complete registration (will check if PASS and NICK are also set)
+	user.tryRegisterUser();
+	
+	// If now registered, send welcome
+	if (user.getIsRegister() && !user.getWelcomeMessage()) {
+		checkUserRegistration(clientFd);
+	}
 }
-
-/*
-* This function sends welcome messages to newly registered users
-* Sends IRC welcome sequence: RPL_WELCOME, RPL_YOURHOST, RPL_CREATED, RPL_MYINFO
-* @param clientFd the client file descriptor
-* @return void
-*/
-void Server::sendWelcomeMessages(const int &clientFd) {
-	User &user = this->Users[clientFd];
-	std::string nick = user.getNickname();
-
-	// RPL_WELCOME (001)
-	std::string msg = ":";
-	msg += SERVER_NAME;
-	msg += " 001 " + nick + " :Welcome to the Internet Relay Network ";
-	msg += nick + "!" + user.getUsername() + "@localhost\r\n";
-	send(clientFd, msg.c_str(), msg.length(), 0);
-
-	// RPL_YOURHOST (002)
-	msg = ":";
-	msg += SERVER_NAME;
-	msg += " 002 " + nick + " :Your host is " + SERVER_NAME;
-	msg += ", running version 1.0\r\n";
-	send(clientFd, msg.c_str(), msg.length(), 0);
-
-	// RPL_CREATED (003)
-	msg = ":";
-	msg += SERVER_NAME;
-	msg += " 003 " + nick + " :This server was created today\r\n";
-	send(clientFd, msg.c_str(), msg.length(), 0);
-
-	// RPL_MYINFO (004)
-	msg = ":";
-	msg += SERVER_NAME;
-	msg += " 004 " + nick + " " + SERVER_NAME;
-	msg += " 1.0 io itklno\r\n";
-	send(clientFd, msg.c_str(), msg.length(), 0);
-}
-
-/*
-** ============================================================================
-**                         USER COMMAND - RFC 1459
-** ============================================================================
-**
-**                       User Registration Flow
-**                              |
-**                              v
-**                    +------------------------+
-**                    | USER <user> 0 * :name  |
-**                    +------------------------+
-**                              |
-**                              v
-**                    +------------------------+
-**                    | Check if registered    |
-**                    +------------------------+
-**                         /         \
-**                   Not Yet       Already
-**                     |              |
-**                     v              v
-**            +----------------+  ERR_ALREADYREGISTRED (462)
-**            | Parse params:  |  "You may not reregister"
-**            | - username     |
-**            | - hostname     |
-**            | - servername   |
-**            | - realname     |
-**            +----------------+
-**                     |
-**                     v
-**            +----------------+
-**            | Validate format|
-**            +----------------+
-**                   /       \
-**              Valid      Invalid
-**                |           |
-**                v           v
-**       +---------------+  ERR_NEEDMOREPARAMS (461)
-**       | Store user    |  "Not enough parameters"
-**       | information   |
-**       +---------------+
-**                |
-**                v
-**       +---------------+
-**       | Check full    |
-**       | registration: |
-**       | PASS + NICK   |
-**       | + USER        |
-**       +---------------+
-**                |
-**                v
-**       +---------------+
-**       | Send Welcome  |
-**       | messages (001-|
-**       | 004 RPL)      |
-**       +---------------+
-**
-**  USER COMMAND FORMAT:
-**  USER <username> <hostname> <servername> :<realname>
-**  
-**  Example: USER john 0 * :John Doe
-**           USER alice localhost server.com :Alice Wonderland
-**
-**  Parameters:
-**  - username: User identifier (no spaces)
-**  - hostname: Usually set to 0 (ignored by server)
-**  - servername: Usually set to * (ignored by server)
-**  - realname: Real name (can contain spaces, prefixed with :)
-**
-** ============================================================================
-*/
