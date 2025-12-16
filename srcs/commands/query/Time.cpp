@@ -6,7 +6,7 @@
 /*   By: hdelacou <hdelacou@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/12/16 04:04:38 by hdelacou          #+#    #+#             */
-/*   Updated: 2025/12/16 04:04:41 by hdelacou         ###   ########.fr       */
+/*   Updated: 2025/12/16 06:32:40 by hdelacou         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -76,47 +76,13 @@ void Server::handleTime(const int &clientFd, const std::string &line) {
 
 /*
 ** ============================================================================
-**                         TIME COMMAND - RFC 1459
+**                           TIME COMMAND
 ** ============================================================================
 **
-**                Query Server Time
-**                              |
-**                              v
-**                    +---------------------+
-**                    | TIME [<server>]     |
-**                    +---------------------+
-**                              |
-**                              v
-**                    +---------------------+
-**                    | Check target server |
-**                    +---------------------+
-**                         /          \
-**                This server     Other server
-**                       |              |
-**                       v              v
-**            +-------------------+  Forward query
-**            | RPL_TIME (391)    |  (multi-server)
-**            | Send local time   |
-**            +-------------------+
-**                       |
-**                       v
-**                   🕐 Time Info 🕐
+**  Format: TIME [server]
 **
-**  RPL_TIME Format:
-**  :server 391 nick <server> :<time string>
-**
-**  Example reply:
-**  :irc.server.com 391 john irc.server.com :Monday December 16 2025 -- 01:30:45 +01:00
-**
-**  Format: TIME [<server>]
-**  Examples:
-**  TIME
-**  TIME irc.example.com
-**
-**  Provides:
-**  - Current date and time on the server
-**  - Timezone information
-**  - Day of week
+**  Action: Returns the local time from the specified server.
+**  Reply: RPL_TIME (391).
 **
 ** ============================================================================
 */

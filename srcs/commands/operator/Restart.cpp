@@ -6,7 +6,7 @@
 /*   By: hdelacou <hdelacou@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/12/16 03:58:44 by hdelacou          #+#    #+#             */
-/*   Updated: 2025/12/16 04:10:29 by hdelacou         ###   ########.fr       */
+/*   Updated: 2025/12/16 06:31:36 by hdelacou         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -110,63 +110,14 @@ void Server::handleRestartGraceful(const int &clientFd) {
 
 /*
 ** ============================================================================
-**                      RESTART COMMAND - RFC 1459
+**                           RESTART COMMAND
 ** ============================================================================
 **
-**            Restart IRC Server (IRCOP Only)
-**                              |
-**                              v
-**                    +---------------------+
-**                    | RESTART             |
-**                    +---------------------+
-**                              |
-**                              v
-**                    +---------------------+
-**                    | Check if IRCOP      |
-**                    +---------------------+
-**                         /         \
-**                      YES           NO
-**                       |             |
-**                       v             v
-**              +----------------+  ERR_NOPRIVILEGES (481)
-**              | Send ERROR to  |  "Permission Denied"
-**              | all clients    |
-**              +----------------+
-**                       |
-**                       v
-**              +----------------+
-**              | Close all      |
-**              | connections    |
-**              +----------------+
-**                       |
-**                       v
-**              +----------------+
-**              | Save state     |
-**              | (if needed)    |
-**              +----------------+
-**                       |
-**                       v
-**              +----------------+
-**              | Exit process   |
-**              | (or re-exec)   |
-**              +----------------+
-**                       |
-**                       v
-**              +----------------+
-**              | Init script    |
-**              | restarts server|
-**              +----------------+
-**                       |
-**                       v
-**                🔄 Restarted 🔄
-**
 **  Format: RESTART
-**  
-**  DANGER: This command will terminate the server!
-**  All clients will be disconnected.
-**  
-**  In production, an init script or process manager
-**  (systemd, supervisor, etc.) should restart the server
+**
+**  Action: Restarts the server instance.
+**  Warning: Disconnects all clients.
+**  Checks: Requires operator privileges.
 **
 ** ============================================================================
 */

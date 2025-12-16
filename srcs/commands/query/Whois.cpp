@@ -6,7 +6,7 @@
 /*   By: hdelacou <hdelacou@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/12/16 04:06:01 by hdelacou          #+#    #+#             */
-/*   Updated: 2025/12/16 04:06:04 by hdelacou         ###   ########.fr       */
+/*   Updated: 2025/12/16 06:30:07 by hdelacou         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -165,47 +165,14 @@ void Server::handleWhois(const int &clientFd, const std::string &line) {
 
 /*
 ** ============================================================================
-**                         WHOIS COMMAND - RFC 1459
+**                           WHOIS COMMAND
 ** ============================================================================
 **
-**                Query User Information
-**                              |
-**                              v
-**                    +----------------------+
-**                    | WHOIS <nickname>     |
-**                    +----------------------+
-**                              |
-**                              v
-**                    +----------------------+
-**                    | Find user by nickname|
-**                    +----------------------+
-**                         /          \
-**                     Found         Not Found
-**                       |              |
-**                       v              v
-**            +------------------+  ERR_NOSUCHNICK (401)
-**            | Send user info:  |  "No such nick"
-**            | - RPL_WHOISUSER  |
-**            | - RPL_WHOISCHANNELS
-**            | - RPL_WHOISSERVER|
-**            | - RPL_AWAY       |
-**            | - RPL_WHOISOPERATOR
-**            | - RPL_ENDOFWHOIS |
-**            +------------------+
-**                       |
-**                       v
-**                   🔍 Info Sent 🔍
-**
-**  WHOIS Returns:
-**  - Basic info: nick, username, hostname, realname
-**  - Channels user is on
-**  - Server user is connected to
-**  - Away message (if away)
-**  - Operator status (if IRCOP)
-**  - Idle time (optional)
-**
 **  Format: WHOIS <nickname>
-**  Example: WHOIS john
+**
+**  Action: Returns detailed info about a specific user.
+**  Replies: WHOISUSER (311), CHANNELS (319), SERVER (312), OPERATOR (313),
+**           AWAY (301), ENDOFWHOIS (318).
 **
 ** ============================================================================
 */

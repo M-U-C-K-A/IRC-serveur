@@ -6,7 +6,7 @@
 /*   By: hdelacou <hdelacou@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/12/16 04:10:00 by hdelacou          #+#    #+#             */
-/*   Updated: 2025/12/16 06:18:26 by hdelacou         ###   ########.fr       */
+/*   Updated: 2025/12/16 06:21:47 by hdelacou         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -66,7 +66,8 @@ User &User::operator=(const User &src)
  * Destructor for User class
  * Closes the user's connection if it is valid
  */
-User::~User() {
+User::~User()
+{
 	closeConnection();
 }
 
@@ -134,4 +135,3 @@ void User::tryRegisterUser()
 		this->isRegister = true;
 	}
 }
-

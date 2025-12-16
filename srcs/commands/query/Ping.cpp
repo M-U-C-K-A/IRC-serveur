@@ -6,7 +6,7 @@
 /*   By: hdelacou <hdelacou@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/12/16 04:04:03 by hdelacou          #+#    #+#             */
-/*   Updated: 2025/12/16 04:58:45 by hdelacou         ###   ########.fr       */
+/*   Updated: 2025/12/16 06:30:09 by hdelacou         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -86,48 +86,13 @@ void Server::handlePong(const int &clientFd, const std::string &line) {
 
 /*
 ** ============================================================================
-**                         PING COMMAND - RFC 1459
+**                           PING COMMAND
 ** ============================================================================
 **
-**                  Test Connection Alive
-**                              |
-**                              v
-**                    +---------------------+
-**                    | PING <token>        |
-**                    +---------------------+
-**                              |
-**                              v
-**                    +---------------------+
-**                    | Receive ping token  |
-**                    +---------------------+
-**                              |
-**                              v
-**                    +---------------------+
-**                    | PONG <token>        |
-**                    | Send back same token|
-**                    +---------------------+
-**                              |
-**                              v
-**                       🏓 Pong! 🏓
+**  Format: PING <token>
 **
-**  PING/PONG Mechanism:
-**  - Client or server sends PING with a token
-**  - Receiver MUST respond with PONG and same token
-**  - Used to test connection is alive
-**  - Used to measure latency
-**  - Timeout if no PONG received
-**
-**  Format: PING <server1> [<server2>]
-**  Examples:
-**  PING :localhost
-**  PING irc.server.com
-**
-**  Reply format:
-**  PONG <server> :<token>
-**
-**  Common usage:
-**  Client -> Server: PING :1234567890
-**  Server -> Client: PONG irc.server.com :1234567890
+**  Action: Tests connection vitality.
+**  Reply: PONG <token> (Must match sent token).
 **
 ** ============================================================================
 */

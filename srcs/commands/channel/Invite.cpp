@@ -6,7 +6,7 @@
 /*   By: hdelacou <hdelacou@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/12/16 02:34:25 by hdelacou          #+#    #+#             */
-/*   Updated: 2025/12/16 03:53:43 by hdelacou         ###   ########.fr       */
+/*   Updated: 2025/12/16 06:34:59 by hdelacou         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,38 +26,14 @@ void Server::handleInvite(const int &clientFd, const std::string &line) {
 
 /*
 ** ============================================================================
-**                            INVITE COMMAND
+**                           INVITE COMMAND
 ** ============================================================================
 **
-**      Inviter              Server                Target User
-**          |                    |                       |
-**          | INVITE bob #chan   |                       |
-**          |------------------> |                       |
-**          |                    |                       |
-**          |                    | Check permissions:    |
-**          |                    | - Is inviter on chan? |
-**          |                    | - Is inviter op?      |
-**          |                    | - Is target online?   |
-**          |                    | - Is target on chan?  |
-**          |                    |                       |
-**          |  RPL_INVITING(341) |                       |
-**          | <----------------- |                       |
-**          |                    |                       |
-**          |                    | :inviter INVITE bob   |
-**          |                    |---------------------> |
-**          |                    |                       |
-**          |                    |                       | Notified
-**          |                    |                       | Can now JOIN
-**          v                    v                       v
+**  Format: INVITE <user> <channel>
 **
-**  Flow: Operator invites -> Target notified -> Added to invite list
-**
-**  Possible Errors:
-**  - ERR_NEEDMOREPARAMS (461): Not enough parameters
-**  - ERR_NOSUCHNICK (401): Target user doesn't exist
-**  - ERR_NOTONCHANNEL (442): Inviter not on channel
-**  - ERR_CHANOPRIVSNEEDED (482): Not channel operator
-**  - ERR_USERONCHANNEL (443): Target already on channel
+**  Action: Invites target user to channel (bypasses +i, +l, +k).
+**  Checks: Inviter must be on channel. Op privileges if +i.
+**  Notify: Sends INVITE message to target user.
 **
 ** ============================================================================
 */

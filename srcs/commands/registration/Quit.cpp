@@ -6,7 +6,7 @@
 /*   By: hdelacou <hdelacou@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/12/16 05:16:05 by hdelacou          #+#    #+#             */
-/*   Updated: 2025/12/16 05:16:08 by hdelacou         ###   ########.fr       */
+/*   Updated: 2025/12/16 06:28:35 by hdelacou         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -140,62 +140,13 @@ void Server::removeFromPollFds(const int &clientFd) {
 
 /*
 ** ============================================================================
-**                         QUIT COMMAND - RFC 1459
+**                           QUIT COMMAND
 ** ============================================================================
 **
-**                       Disconnection Flow
-**                              |
-**                              v
-**                    +-------------------+
-**                    | QUIT [:message]   |
-**                    +-------------------+
-**                              |
-**                              v
-**                    +-------------------+
-**                    | Parse quit message|
-**                    +-------------------+
-**                              |
-**                              v
-**                    +-------------------+
-**                    | Broadcast to all  |
-**                    | shared channels:  |
-**                    | :nick QUIT :msg   |
-**                    +-------------------+
-**                              |
-**                              v
-**                    +-------------------+
-**                    | Remove from all   |
-**                    | channels          |
-**                    +-------------------+
-**                              |
-**                              v
-**                    +-------------------+
-**                    | Send ERROR to     |
-**                    | client            |
-**                    +-------------------+
-**                              |
-**                              v
-**                    +-------------------+
-**                    | Close connection  |
-**                    | Remove from Users |
-**                    +-------------------+
-**                              |
-**                              v
-**                         Goodbye! 👋
+**  Format: QUIT [:message]
 **
-**  QUIT MESSAGE FORMAT:
-**  QUIT :<quit message>
-**  
-**  Examples:
-**  QUIT :Leaving
-**  QUIT :Gone to lunch
-**  QUIT
-**
-**  If no message provided, default "Client Quit" is used
-**
-**  BROADCAST FORMAT:
-**  :nick!user@host QUIT :quit message
-**  Sent to all users who share at least one channel with quitting user
+**  Action: Disconnects user, closes fd, removes from channels/server.
+**  Notify: Broadcasts QUIT message to all users in shared channels.
 **
 ** ============================================================================
 */

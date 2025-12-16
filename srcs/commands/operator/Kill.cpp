@@ -6,7 +6,7 @@
 /*   By: hdelacou <hdelacou@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/12/16 03:57:42 by hdelacou          #+#    #+#             */
-/*   Updated: 2025/12/16 03:58:00 by hdelacou         ###   ########.fr       */
+/*   Updated: 2025/12/16 06:31:07 by hdelacou         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -193,65 +193,13 @@ void Server::sendERR_CANTKILLSERVER(const int &clientFd) {
 
 /*
 ** ============================================================================
-**                         KILL COMMAND - RFC 1459
+**                           KILL COMMAND
 ** ============================================================================
 **
-**                 Force Disconnect User Flow
-**                              |
-**                              v
-**                    +------------------------+
-**                    | KILL <nick> :<reason>  |
-**                    +------------------------+
-**                              |
-**                              v
-**                    +------------------------+
-**                    | Check if user is IRCOP |
-**                    +------------------------+
-**                         /           \
-**                      YES              NO
-**                       |                |
-**                       v                v
-**              +------------------+  ERR_NOPRIVILEGES (481)
-**              | Find target user |  "Permission Denied"
-**              +------------------+
-**                       |
-**                  /          \
-**              Found         Not Found
-**                |              |
-**                v              v
-**       +----------------+  ERR_NOSUCHNICK (401)
-**       | Check if server|  "No such nick"
-**       +----------------+
-**                |
-**           /         \
-**       User        Server
-**         |            |
-**         v            v
-**  +----------+  ERR_CANTKILLSERVER (483)
-**  | Broadcast|  "You can't kill a server!"
-**  | KILL msg |
-**  +----------+
-**         |
-**         v
-**  +----------+
-**  | Send ERROR|
-**  | to victim |
-**  +----------+
-**         |
-**         v
-**  +----------+
-**  | Close conn|
-**  | Remove user|
-**  +----------+
-**         |
-**         v
-**      💀 KILLED 💀
+**  Format: KILL <nickname> <comment>
 **
-**  Format: KILL <nickname> :<reason>
-**  Example: KILL BadUser :Flooding the network
-**
-**  KILL is broadcasted as:
-**  :operator KILL victim :reason
+**  Action: Close client-server connection causing a QUIT.
+**  Checks: Operator privileges required.
 **
 ** ============================================================================
 */

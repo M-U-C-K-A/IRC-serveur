@@ -6,7 +6,7 @@
 /*   By: hdelacou <hdelacou@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/12/16 04:05:35 by hdelacou          #+#    #+#             */
-/*   Updated: 2025/12/16 04:05:38 by hdelacou         ###   ########.fr       */
+/*   Updated: 2025/12/16 06:33:21 by hdelacou         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -59,47 +59,13 @@ void Server::handleVersion(const int &clientFd, const std::string &line) {
 
 /*
 ** ============================================================================
-**                       VERSION COMMAND - RFC 1459
+**                           VERSION COMMAND
 ** ============================================================================
 **
-**                Query Server Version
-**                              |
-**                              v
-**                    +---------------------+
-**                    | VERSION [<server>]  |
-**                    +---------------------+
-**                              |
-**                              v
-**                    +---------------------+
-**                    | Check target server |
-**                    +---------------------+
-**                         /          \
-**                This server     Other server
-**                       |              |
-**                       v              v
-**            +-------------------+  Forward query
-**            | RPL_VERSION (351) |  (multi-server)
-**            | Send version info |
-**            +-------------------+
-**                       |
-**                       v
-**               ℹ️ Version Info ℹ️
+**  Format: VERSION [server]
 **
-**  RPL_VERSION Format:
-**  :server 351 nick <version>.<debuglevel> <server> :<comments>
-**
-**  Example reply:
-**  :irc.server.com 351 john ft_irc-1.0 irc.server.com :IRC Server
-**
-**  Format: VERSION [<server>]
-**  Examples:
-**  VERSION
-**  VERSION irc.example.com
-**
-**  Provides:
-**  - Server software name and version
-**  - Debug level / build info
-**  - Additional comments about the server
+**  Action: Queries the version of the server program.
+**  Reply: RPL_VERSION (351).
 **
 ** ============================================================================
 */

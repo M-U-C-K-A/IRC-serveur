@@ -6,7 +6,7 @@
 /*   By: hdelacou <hdelacou@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/12/16 04:10:00 by hdelacou          #+#    #+#             */
-/*   Updated: 2025/12/16 06:17:20 by hdelacou         ###   ########.fr       */
+/*   Updated: 2025/12/16 06:22:22 by hdelacou         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,9 +30,9 @@
 #include <sstream>
 
 /* Send a generic numeric reply to a client */
-void Server::sendNumericReply(const int &clientFd, int code, 
-                               const std::string &params,
-                               const std::string &message)
+void Server::sendNumericReply(const int &clientFd, int code,
+							  const std::string &params,
+							  const std::string &message)
 {
 	std::string nick = this->Users[clientFd].getNickname();
 	if (nick.empty())
@@ -175,8 +175,8 @@ void Server::sendERR_NOOPERHOST(const int &clientFd)
 }
 
 /* RPL_AWAY (301): User is away */
-void Server::sendRPL_AWAY(const int &clientFd, const std::string &nick, 
-                          const std::string &awayMsg)
+void Server::sendRPL_AWAY(const int &clientFd, const std::string &nick,
+						  const std::string &awayMsg)
 {
 	sendNumericReply(clientFd, RPL_AWAY, nick, awayMsg);
 }
@@ -235,4 +235,3 @@ void Server::sendERR_NOSUCHCHANNEL(const int &clientFd, const std::string &chann
 {
 	sendNumericReply(clientFd, 403, channel, "No such channel");
 }
-

@@ -6,7 +6,7 @@
 /*   By: hdelacou <hdelacou@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/12/16 04:03:12 by hdelacou          #+#    #+#             */
-/*   Updated: 2025/12/16 04:03:15 by hdelacou         ###   ########.fr       */
+/*   Updated: 2025/12/16 06:32:23 by hdelacou         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -124,51 +124,13 @@ void Server::handleList(const int &clientFd, const std::string &line) {
 
 /*
 ** ============================================================================
-**                          LIST COMMAND - RFC 1459
+**                           LIST COMMAND
 ** ============================================================================
 **
-**                  List Channels and Topics
-**                              |
-**                              v
-**                    +----------------------+
-**                    | LIST [#channel]      |
-**                    +----------------------+
-**                              |
-**                        /           \
-**               Channel given    No channel
-**                      |              |
-**                      v              v
-**            +----------------+  +----------------+
-**            | List that      |  | List all       |
-**            | specific chan  |  | channels       |
-**            +----------------+  +----------------+
-**                      |              |
-**                      v              v
-**            +--------------------------------+
-**            | RPL_LIST (322) for each channel|
-**            | Format: #chan <users> :<topic> |
-**            +--------------------------------+
-**                              |
-**                              v
-**            +--------------------------------+
-**            | RPL_LISTEND (323)             |
-**            | :End of /LIST                 |
-**            +--------------------------------+
-**                              |
-**                              v
-**                          📜 Listed 📜
+**  Format: LIST [channel(s)]
 **
-**  Reply format:
-**  RPL_LIST: :server 322 nick #channel <visible_users> :<topic>
-**  RPL_LISTEND: :server 323 nick :End of /LIST
-**
-**  Format: LIST [<channel>{,<channel>}]
-**  Examples:
-**  LIST
-**  LIST #general
-**  LIST #chan1,#chan2
-**
-**  Shows: Channel name, number of visible users, topic
+**  Action: Lists channels and their topics.
+**  Replies: RPL_LIST (322), RPL_LISTEND (323).
 **
 ** ============================================================================
 */

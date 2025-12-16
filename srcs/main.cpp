@@ -6,7 +6,7 @@
 /*   By: hdelacou <hdelacou@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/12/16 04:10:00 by hdelacou          #+#    #+#             */
-/*   Updated: 2025/12/16 06:17:42 by hdelacou         ###   ########.fr       */
+/*   Updated: 2025/12/16 06:21:20 by hdelacou         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,7 +36,8 @@
  * Setup signal handlers for graceful shutdown
  * Handles SIGINT (Ctrl+C) and SIGQUIT signals
  */
-void setupSignal() {
+void setupSignal()
+{
 	signal(SIGINT, Server::signalHandler);
 	signal(SIGQUIT, Server::signalHandler);
 }
@@ -47,12 +48,15 @@ void setupSignal() {
  * @param password the password to validate
  * @return true if arguments are valid, false otherwise
  */
-bool checkArgs(const int port, const std::string password) {
-	if (port < 1024 || port > 65535) {
+bool checkArgs(const int port, const std::string password)
+{
+	if (port < 1024 || port > 65535)
+	{
 		std::cerr << "Port needs to be between 1024 and 65535" << std::endl;
 		return (false);
 	}
-	if (password.length() > 18) {
+	if (password.length() > 18)
+	{
 		std::cerr << "Password too long" << std::endl;
 		return (false);
 	}
@@ -65,19 +69,23 @@ bool checkArgs(const int port, const std::string password) {
  * @param av argument vector
  * @return EXIT_SUCCESS on success, EXIT_FAILURE on error
  */
-int main(int ac, char **av) {
+int main(int ac, char **av)
+{
 
-	if (ac != 3 || !checkArgs(std::atoi(av[PORT]), av[PASSWORD])) {
+	if (ac != 3 || !checkArgs(std::atoi(av[PORT]), av[PASSWORD]))
+	{
 		std::cerr << "usage: ./ircserv <port> <password>" << std::endl;
 		return (EXIT_FAILURE);
 	}
-	try {
+	try
+	{
 		Server serv;
 		setupSignal();
 		serv.initServer(std::atoi(av[PORT]), av[PASSWORD]);
 		serv.runServer();
 	}
-	catch(const std::exception& e) {
+	catch (const std::exception &e)
+	{
 		std::cerr << e.what() << '\n';
 		Server::running = false;
 	}

@@ -6,7 +6,7 @@
 /*   By: hdelacou <hdelacou@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/12/16 03:52:03 by hdelacou          #+#    #+#             */
-/*   Updated: 2025/12/16 03:59:07 by hdelacou         ###   ########.fr       */
+/*   Updated: 2025/12/16 06:31:40 by hdelacou         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -124,57 +124,13 @@ void Server::sendERR_NOSUCHSERVER(const int &clientFd, const std::string &server
 
 /*
 ** ============================================================================
-**                      SQUIT COMMAND - RFC 1459
+**                           SQUIT COMMAND
 ** ============================================================================
 **
-**              Server Disconnect Flow (IRCOP Only)
-**                              |
-**                              v
-**                    +-------------------------+
-**                    | SQUIT <server> :<reason>|
-**                    +-------------------------+
-**                              |
-**                              v
-**                    +-------------------------+
-**                    | Check if user is IRCOP  |
-**                    +-------------------------+
-**                         /            \
-**                      YES              NO
-**                       |                |
-**                       v                v
-**              +------------------+  ERR_NOPRIVILEGES (481)
-**              | Find server link |  "Permission Denied"
-**              +------------------+
-**                       |
-**                  /          \
-**              Found         Not Found
-**                |              |
-**                v              v
-**       +-----------------+  ERR_NOSUCHSERVER (402)
-**       | Close all conns |  "No such server"
-**       | from that server|
-**       +-----------------+
-**                |
-**                v
-**       +-----------------+
-**       | Broadcast SQUIT |
-**       | to network      |
-**       +-----------------+
-**                |
-**                v
-**       +-----------------+
-**       | Remove server   |
-**       | from routing    |
-**       +-----------------+
-**                |
-**                v
-**          🔌 Disconnected 🔌
+**  Format: SQUIT <server> <comment>
 **
-**  Format: SQUIT <server> :<comment>
-**  Example: SQUIT irc.example.com :Bad link
-**
-**  NOTE: In single-server implementation, this command
-**        is mostly a placeholder for protocol compliance
+**  Action: Disconnects a linked server.
+**  Checks: Requires operator privileges.
 **
 ** ============================================================================
 */

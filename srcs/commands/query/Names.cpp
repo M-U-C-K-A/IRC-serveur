@@ -6,7 +6,7 @@
 /*   By: hdelacou <hdelacou@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/12/16 04:03:33 by hdelacou          #+#    #+#             */
-/*   Updated: 2025/12/16 04:03:35 by hdelacou         ###   ########.fr       */
+/*   Updated: 2025/12/16 06:32:29 by hdelacou         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -134,52 +134,13 @@ void Server::handleNames(const int &clientFd, const std::string &line) {
 
 /*
 ** ============================================================================
-**                         NAMES COMMAND - RFC 1459
+**                           NAMES COMMAND
 ** ============================================================================
 **
-**                List Users in Channel(s)
-**                              |
-**                              v
-**                    +----------------------+
-**                    | NAMES [#channel]     |
-**                    +----------------------+
-**                              |
-**                        /           \
-**               Channel given    No channel
-**                      |              |
-**                      v              v
-**            +----------------+  +----------------+
-**            | List users in  |  | List all users |
-**            | that channel   |  | in all channels|
-**            +----------------+  +----------------+
-**                      |              |
-**                      v              v
-**            +--------------------------------+
-**            | RPL_NAMREPLY (353) for each   |
-**            | channel with user list        |
-**            +--------------------------------+
-**                              |
-**                              v
-**            +--------------------------------+
-**            | RPL_ENDOFNAMES (366)          |
-**            +--------------------------------+
-**                              |
-**                              v
-**                          📋 Listed 📋
+**  Format: NAMES [channel(s)]
 **
-**  Format of replies:
-**  RPL_NAMREPLY: :server 353 nick = #channel :@op +voice user1 user2
-**  RPL_ENDOFNAMES: :server 366 nick #channel :End of /NAMES list
-**
-**  Prefixes:
-**  @ = channel operator
-**  + = voice (if implemented)
-**
-**  Format: NAMES [<channel>{,<channel>}]
-**  Examples:
-**  NAMES #general
-**  NAMES
-**  NAMES #chan1,#chan2
+**  Action: Lists nicknames on channels.
+**  Replies: RPL_NAMREPLY (353), RPL_ENDOFNAMES (366).
 **
 ** ============================================================================
 */

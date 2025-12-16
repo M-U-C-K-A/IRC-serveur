@@ -6,7 +6,7 @@
 /*   By: hdelacou <hdelacou@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/12/16 03:56:52 by hdelacou          #+#    #+#             */
-/*   Updated: 2025/12/16 03:56:55 by hdelacou         ###   ########.fr       */
+/*   Updated: 2025/12/16 06:30:58 by hdelacou         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -85,46 +85,13 @@ void Server::handleWallops(const int &clientFd, const std::string &line) {
 
 /*
 ** ============================================================================
-**                       WALLOPS COMMAND - RFC 1459
+**                           WALLOPS COMMAND
 ** ============================================================================
 **
-**                  Broadcast to All Operators
-**                              |
-**                              v
-**                    +----------------------+
-**                    | WALLOPS :<message>   |
-**                    +----------------------+
-**                              |
-**                              v
-**                    +----------------------+
-**                    | Check if IRCOP       |
-**                    +----------------------+
-**                         /          \
-**                      YES            NO
-**                       |              |
-**                       v              v
-**              +----------------+  ERR_NOPRIVILEGES (481)
-**              | Broadcast to   |  "Permission Denied"
-**              | all IRCOPs     |
-**              +----------------+
-**                       |
-**                       v
-**              +----------------+
-**              | :sender WALLOPS|
-**              | :message       |
-**              +----------------+
-**                       |
-**                       v
-**                   📡 Sent 📡
-**
-**  WALLOPS sends a message to all IRC Operators currently online
-**  
 **  Format: WALLOPS :<message>
-**  Example: WALLOPS :Network maintenance in 10 minutes
-**           WALLOPS :DDoS attack detected from 192.168.1.1
 **
-**  Broadcast format:
-**  :sender!user@host WALLOPS :message
+**  Action: Broadcasts message to all users with 'w' (wallops) mode.
+**  Checks: Requires operator privileges.
 **
 ** ============================================================================
 */

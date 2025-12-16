@@ -6,7 +6,7 @@
 /*   By: hdelacou <hdelacou@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/12/16 03:58:34 by hdelacou          #+#    #+#             */
-/*   Updated: 2025/12/16 03:58:35 by hdelacou         ###   ########.fr       */
+/*   Updated: 2025/12/16 06:31:13 by hdelacou         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -99,56 +99,13 @@ void Server::sendRPL_REHASHING(const int &clientFd) {
 
 /*
 ** ============================================================================
-**                      REHASH COMMAND - RFC 1459
+**                           REHASH COMMAND
 ** ============================================================================
 **
-**          Reload Server Configuration (IRCOP Only)
-**                              |
-**                              v
-**                    +---------------------+
-**                    | REHASH              |
-**                    +---------------------+
-**                              |
-**                              v
-**                    +---------------------+
-**                    | Check if IRCOP      |
-**                    +---------------------+
-**                         /         \
-**                      YES           NO
-**                       |             |
-**                       v             v
-**              +---------------+  ERR_NOPRIVILEGES (481)
-**              | Read config   |  "Permission Denied"
-**              | file          |
-**              +---------------+
-**                       |
-**                  /         \
-**              Success      Error
-**                 |            |
-**                 v            v
-**       +---------------+  ERR_FILEERROR (?)
-**       | Update server |  "Cannot read config"
-**       | settings      |
-**       +---------------+
-**                 |
-**                 v
-**       +---------------+
-**       | RPL_REHASHING |
-**       | confirmation  |
-**       +---------------+
-**                 |
-**                 v
-**           🔄 Reloaded 🔄
-**
 **  Format: REHASH
-**  
-**  Reloads:
-**  - Operator passwords
-**  - Port bindings (if possible)
-**  - MOTD
-**  - Other configuration settings
 **
-**  NOTE: Some settings may require server restart
+**  Action: Reloads server configuration files.
+**  Checks: Requires operator privileges.
 **
 ** ============================================================================
 */

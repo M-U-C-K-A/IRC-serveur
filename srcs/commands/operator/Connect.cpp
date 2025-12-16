@@ -6,7 +6,7 @@
 /*   By: hdelacou <hdelacou@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/12/16 03:52:17 by hdelacou          #+#    #+#             */
-/*   Updated: 2025/12/16 03:58:02 by hdelacou         ###   ########.fr       */
+/*   Updated: 2025/12/16 06:31:03 by hdelacou         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -72,57 +72,13 @@ void Server::handleConnect(const int &clientFd, const std::string &line) {
 
 /*
 ** ============================================================================
-**                      CONNECT COMMAND - RFC 1459
+**                           CONNECT COMMAND
 ** ============================================================================
 **
-**          Force Server Connection Flow (IRCOP Only)
-**                              |
-**                              v
-**                 +-------------------------------+
-**                 | CONNECT <server> <port>       |
-**                 | [<remote server>]             |
-**                 +-------------------------------+
-**                              |
-**                              v
-**                 +-------------------------------+
-**                 | Check if user is IRCOP        |
-**                 +-------------------------------+
-**                         /              \
-**                      YES                NO
-**                       |                  |
-**                       v                  v
-**           +---------------------+  ERR_NOPRIVILEGES (481)
-**           | Parse target server |  "Permission Denied"
-**           | and port            |
-**           +---------------------+
-**                       |
-**                       v
-**           +---------------------+
-**           | Validate parameters |
-**           +---------------------+
-**                       |
-**                       v
-**           +---------------------+
-**           | Attempt connection  |
-**           | to remote server    |
-**           +---------------------+
-**                   /        \
-**              Success      Fail
-**                 |           |
-**                 v           v
-**        +-----------+   ERR_NOSUCHSERVER (402)
-**        | Broadcast |   "No such server"
-**        | to network|
-**        +-----------+
-**                |
-**                v
-**         🔗 Connected 🔗
+**  Format: CONNECT <server> <port> [remote]
 **
-**  Format: CONNECT <target server> <port> [<remote server>]
-**  Example: CONNECT irc.example.com 6667
-**
-**  NOTE: In single-server implementation, this is mainly
-**        for protocol compliance
+**  Action: Forces the server to connect to another server.
+**  Checks: Requires operator privileges.
 **
 ** ============================================================================
 */

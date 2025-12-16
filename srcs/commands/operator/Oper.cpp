@@ -6,7 +6,7 @@
 /*   By: hdelacou <hdelacou@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/12/16 03:57:53 by hdelacou          #+#    #+#             */
-/*   Updated: 2025/12/16 03:57:58 by hdelacou         ###   ########.fr       */
+/*   Updated: 2025/12/16 06:31:11 by hdelacou         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -159,61 +159,13 @@ void Server::sendERR_NOOPERHOST(const int &clientFd) {
 
 /*
 ** ============================================================================
-**                         OPER COMMAND - RFC 1459
+**                           OPER COMMAND
 ** ============================================================================
 **
-**                   IRC Operator Elevation Flow
-**                              |
-**                              v
-**                    +----------------------+
-**                    | OPER <user> <pass>   |
-**                    +----------------------+
-**                              |
-**                              v
-**                    +----------------------+
-**                    | Parse user & password|
-**                    +----------------------+
-**                              |
-**                              v
-**                    +----------------------+
-**                    | Validate credentials |
-**                    | against config       |
-**                    +----------------------+
-**                         /           \
-**                    Valid           Invalid
-**                      |                |
-**                      v                v
-**            +-------------------+  ERR_PASSWDMISMATCH (464)
-**            | Set IRCOP mode    |  "Password incorrect"
-**            | MODE user +o      |
-**            +-------------------+
-**                      |
-**                      v
-**            +-------------------+
-**            | RPL_YOUREOPER     |
-**            | "You are now an   |
-**            |  IRC operator"    |
-**            +-------------------+
-**                      |
-**                      v
-**            +-------------------+
-**            | Broadcast MODE +o |
-**            | to network        |
-**            +-------------------+
-**                      |
-**                      v
-**                  ⚡ IRCOP! ⚡
+**  Format: OPER <user> <password>
 **
-**  IRCOP POWERS:
-**  - KILL: Force disconnect users
-**  - SQUIT: Disconnect servers
-**  - CONNECT: Force server connections
-**  - REHASH: Reload server config
-**  - RESTART: Restart server
-**  - WALLOPS: Message all operators
-**
-**  Format: OPER <username> <password>
-**  Example: OPER admin secretpassword
+**  Action: Obtains operator privileges (IRCOP).
+**  Reply: RPL_YOUREOPER (381).
 **
 ** ============================================================================
 */

@@ -6,7 +6,7 @@
 /*   By: hdelacou <hdelacou@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/12/16 02:40:03 by hdelacou          #+#    #+#             */
-/*   Updated: 2025/12/16 04:53:40 by hdelacou         ###   ########.fr       */
+/*   Updated: 2025/12/16 06:30:03 by hdelacou         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -72,32 +72,13 @@ void Server::handleNotice(const int &clientFd, const std::string &line)
 
 /*
 ** ============================================================================
-**                         NOTICE COMMAND - RFC 1459
+**                           NOTICE COMMAND
 ** ============================================================================
 **
-**       Sender                 Server                 Receiver
-**         |                       |                        |
-**         |  NOTICE target :msg   |                        |
-**         |---------------------> |                        |
-**         |                       |                        |
-**         |   Similar to PRIVMSG but:                      |
-**         |   - NO automatic replies                       |
-**         |   - NO error messages                          |
-**         |   - Used by servers/bots                       |
-**         |                       |                        |
-**         |                       | :sender NOTICE target  |
-**         |                       |----------------------> |
-**         |                       |                        |
-**         v                       v                        v
-**
-**  NOTICE is like PRIVMSG but with these key differences:
-**  1. Servers/clients MUST NOT reply to NOTICE
-**  2. No error replies are sent for NOTICE
-**  3. Used for automated messages to avoid loops
-**
 **  Format: NOTICE <target> :<message>
-**  Example: NOTICE john :This is a notice
-**           NOTICE #channel :Server maintenance in 5 minutes
+**
+**  Action: Same as PRIVMSG but strictly for notifications.
+**  Rules: No automatic replies. No error messages returned.
 **
 ** ============================================================================
 */

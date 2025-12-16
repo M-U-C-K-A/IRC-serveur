@@ -6,7 +6,7 @@
 /*   By: hdelacou <hdelacou@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/12/16 04:06:15 by hdelacou          #+#    #+#             */
-/*   Updated: 2025/12/16 04:59:19 by hdelacou         ###   ########.fr       */
+/*   Updated: 2025/12/16 06:28:33 by hdelacou         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -135,52 +135,13 @@ void Server::broadcastNickChange(const int &clientFd,
 
 /*
 ** ============================================================================
-**                         NICK COMMAND - RFC 1459
+**                           NICK COMMAND
 ** ============================================================================
 **
-**                       Nickname Flow
-**                              |
-**                              v
-**                    +-------------------+
-**                    | NICK <nickname>   |
-**                    +-------------------+
-**                              |
-**                              v
-**                    +-------------------+
-**                    |  Validate Format  |
-**                    |  (length, chars)  |
-**                    +-------------------+
-**                         /         \
-**                   Valid           Invalid
-**                     |                |
-**                     v                v
-**            +----------------+   ERR_ERRONEUSNICKNAME (432)
-**            | Check if taken |   "Erroneous nickname"
-**            +----------------+
-**                   /         \
-**              Available    In Use
-**                 |            |
-**                 v            v
-**        +---------------+  ERR_NICKNAMEINUSE (433)
-**        | Set Nickname  |  "Nickname is already in use"
-**        +---------------+
-**                 |
-**                 v
-**        +---------------+
-**        | Broadcast to  |
-**        | all channels  |
-**        +---------------+
-**
-**  NICKNAME RULES:
-**  - Maximum 9 characters
-**  - Must start with a letter
-**  - Can contain: letters, digits, special chars: [ ] \ ` _ ^ { | }
-**  - Case insensitive for collision detection
-**  - No spaces allowed
-**
 **  Format: NICK <nickname>
-**  Example: NICK JohnDoe
-**           NICK Alice_42
+**
+**  Checks: Format (alphanum, max 9 chars) → Collision (in use?)
+**  Action: Updates nickname and broadcasts change to shared channels.
 **
 ** ============================================================================
 */
