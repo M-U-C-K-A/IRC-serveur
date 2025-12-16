@@ -1,46 +1,14 @@
-/*
-** ============================================================================
-**                         AWAY COMMAND - RFC 1459
-** ============================================================================
-**
-**                   Set/Unset Away Status
-**                              |
-**                              v
-**                    +---------------------+
-**                    | AWAY [:<message>]   |
-**                    +---------------------+
-**                              |
-**                        /           \
-**                With message    No message
-**                      |              |
-**                      v              v
-**            +----------------+  +----------------+
-**            | Set AWAY status|  | Unset AWAY     |
-**            | Store message  |  | Clear message  |
-**            +----------------+  +----------------+
-**                      |              |
-**                      v              v
-**            +----------------+  +----------------+
-**            | RPL_NOWAWAY    |  | RPL_UNAWAY     |
-**            | (306)          |  | (305)          |
-**            +----------------+  +----------------+
-**                      |              |
-**                      v              v
-**                     Away            Back
-**
-**  When user is AWAY:
-**  - PRIVMSGs trigger RPL_AWAY (301) to sender
-**  - WHOIS shows away message
-**  - Status visible to other users
-**
-**  Format: AWAY [:<away message>]
-**  Examples:
-**  AWAY :Gone to lunch, back in 1 hour
-**  AWAY :AFK
-**  AWAY                             (unset away)
-**
-** ============================================================================
-*/
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   Away.cpp                                           :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: hdelacou <hdelacou@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/12/16 02:39:30 by hdelacou          #+#    #+#             */
+/*   Updated: 2025/12/16 02:39:37 by hdelacou         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
 
 #include "../../../includes/Server.hpp"
 #include "../../../includes/Utils.hpp"
@@ -91,3 +59,47 @@ void Server::handleAway(const int &clientFd, const std::string &line)
 		          << " is now away: " << awayMessage << std::endl;
 	}
 }
+
+/*
+** ============================================================================
+**                         AWAY COMMAND - RFC 1459
+** ============================================================================
+**
+**                   Set/Unset Away Status
+**                              |
+**                              v
+**                    +---------------------+
+**                    | AWAY [:<message>]   |
+**                    +---------------------+
+**                              |
+**                        /           \
+**                With message    No message
+**                      |              |
+**                      v              v
+**            +----------------+  +----------------+
+**            | Set AWAY status|  | Unset AWAY     |
+**            | Store message  |  | Clear message  |
+**            +----------------+  +----------------+
+**                      |              |
+**                      v              v
+**            +----------------+  +----------------+
+**            | RPL_NOWAWAY    |  | RPL_UNAWAY     |
+**            | (306)          |  | (305)          |
+**            +----------------+  +----------------+
+**                      |              |
+**                      v              v
+**                     Away            Back
+**
+**  When user is AWAY:
+**  - PRIVMSGs trigger RPL_AWAY (301) to sender
+**  - WHOIS shows away message
+**  - Status visible to other users
+**
+**  Format: AWAY [:<away message>]
+**  Examples:
+**  AWAY :Gone to lunch, back in 1 hour
+**  AWAY :AFK
+**  AWAY                             (unset away)
+**
+** ============================================================================
+*/

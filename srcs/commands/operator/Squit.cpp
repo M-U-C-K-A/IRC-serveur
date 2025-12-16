@@ -1,75 +1,33 @@
-/*
-** ============================================================================
-**                      SQUIT COMMAND - RFC 1459
-** ============================================================================
-**
-**              Server Disconnect Flow (IRCOP Only)
-**                              |
-**                              v
-**                    +-------------------------+
-**                    | SQUIT <server> :<reason>|
-**                    +-------------------------+
-**                              |
-**                              v
-**                    +-------------------------+
-**                    | Check if user is IRCOP  |
-**                    +-------------------------+
-**                         /            \
-**                      YES              NO
-**                       |                |
-**                       v                v
-**              +------------------+  ERR_NOPRIVILEGES (481)
-**              | Find server link |  "Permission Denied"
-**              +------------------+
-**                       |
-**                  /          \
-**              Found         Not Found
-**                |              |
-**                v              v
-**       +-----------------+  ERR_NOSUCHSERVER (402)
-**       | Close all conns |  "No such server"
-**       | from that server|
-**       +-----------------+
-**                |
-**                v
-**       +-----------------+
-**       | Broadcast SQUIT |
-**       | to network      |
-**       +-----------------+
-**                |
-**                v
-**       +-----------------+
-**       | Remove server   |
-**       | from routing    |
-**       +-----------------+
-**                |
-**                v
-**          🔌 Disconnected 🔌
-**
-**  Format: SQUIT <server> :<comment>
-**  Example: SQUIT irc.example.com :Bad link
-**
-**  NOTE: In single-server implementation, this command
-**        is mostly a placeholder for protocol compliance
-**
-** ============================================================================
-*/
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   Squit.cpp                                          :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: hdelacou <hdelacou@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/12/16 03:52:03 by hdelacou          #+#    #+#             */
+/*   Updated: 2025/12/16 03:59:07 by hdelacou         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
 
 #include "../../../includes/Server.hpp"
 #include "../../../includes/Utils.hpp"
 
 /*
-**  ┌─────────────────────────────────────────┐
-**  │     parseSQuitCommand() - Parser        │
-**  │                                         │
-**  │  Extracts server name and reason        │
-**  └─────────────────────────────────────────┘
+* This function parses the SQUIT command
+* @param line the raw command line to parse
+* @return SQuitParams struct containing server name and comment
 */
 struct SQuitParams {
 	std::string server;
 	std::string comment;
 };
 
+/*
+* This function parses the SQUIT command
+* @param line the raw command line to parse
+* @return SQuitParams struct containing server name and comment
+*/
 SQuitParams Server::parseSQuitCommand(const std::string &line) {
 	SQuitParams params;
 	
@@ -145,12 +103,11 @@ void Server::handleSQuit(const int &clientFd, const std::string &line) {
 }
 
 /*
-**  ┌─────────────────────────────────────────┐
-**  │     Error Response Functions            │
-**  └─────────────────────────────────────────┘
+* this fonction will send the ERR_NOSUCHSERVER error
+* @param clientFd the client file descriptor
+* @param serverName the server name
+* @return void
 */
-
-// ERR_NOSUCHSERVER (402): No such server
 void Server::sendERR_NOSUCHSERVER(const int &clientFd, const std::string &serverName) {
 	std::string nick = this->Users[clientFd].getNickname();
 	
@@ -164,3 +121,60 @@ void Server::sendERR_NOSUCHSERVER(const int &clientFd, const std::string &server
 	
 	send(clientFd, response.c_str(), response.length(), 0);
 }
+
+/*
+** ============================================================================
+**                      SQUIT COMMAND - RFC 1459
+** ============================================================================
+**
+**              Server Disconnect Flow (IRCOP Only)
+**                              |
+**                              v
+**                    +-------------------------+
+**                    | SQUIT <server> :<reason>|
+**                    +-------------------------+
+**                              |
+**                              v
+**                    +-------------------------+
+**                    | Check if user is IRCOP  |
+**                    +-------------------------+
+**                         /            \
+**                      YES              NO
+**                       |                |
+**                       v                v
+**              +------------------+  ERR_NOPRIVILEGES (481)
+**              | Find server link |  "Permission Denied"
+**              +------------------+
+**                       |
+**                  /          \
+**              Found         Not Found
+**                |              |
+**                v              v
+**       +-----------------+  ERR_NOSUCHSERVER (402)
+**       | Close all conns |  "No such server"
+**       | from that server|
+**       +-----------------+
+**                |
+**                v
+**       +-----------------+
+**       | Broadcast SQUIT |
+**       | to network      |
+**       +-----------------+
+**                |
+**                v
+**       +-----------------+
+**       | Remove server   |
+**       | from routing    |
+**       +-----------------+
+**                |
+**                v
+**          🔌 Disconnected 🔌
+**
+**  Format: SQUIT <server> :<comment>
+**  Example: SQUIT irc.example.com :Bad link
+**
+**  NOTE: In single-server implementation, this command
+**        is mostly a placeholder for protocol compliance
+**
+** ============================================================================
+*/

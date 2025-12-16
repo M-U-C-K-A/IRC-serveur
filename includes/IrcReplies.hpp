@@ -81,18 +81,24 @@
 
 // 400-599: Error replies
 #define ERR_NOSUCHNICK 401
+#define ERR_NOSUCHCHANNEL 403
 #define ERR_NOSUCHSERVER 402
+#define ERR_NOORIGIN 409
 #define ERR_NORECIPIENT 411
 #define ERR_NOTEXTTOSEND 412
 #define ERR_NONICKNAMEGIVEN 431
 #define ERR_ERRONEUSNICKNAME 432
+#define ERR_INVALIDUSERNAME 432
 #define ERR_NICKNAMEINUSE 433
+#define ERR_USERONCHANNEL 443
+#define ERR_USERNOTINCHANNEL 441
 #define ERR_NOTONCHANNEL 442
 #define ERR_NOTREGISTERED 451
 #define ERR_NEEDMOREPARAMS 461
 #define ERR_ALREADYREGISTRED 462
 #define ERR_PASSWDMISMATCH 464
 #define ERR_CHANNELISFULL 471
+#define ERR_UNKNOWNMODE 472
 #define ERR_INVITEONLYCHAN 473
 #define ERR_BANNEDFROMCHAN 474
 #define ERR_BADCHANNELKEY 475
@@ -108,11 +114,16 @@
 
 #define MSG_ERR_NOSUCHNICK "No such nick/channel"
 #define MSG_ERR_NOSUCHSERVER "No such server"
+#define MSG_ERR_NOORIGIN "No origin specified"
 #define MSG_ERR_NORECIPIENT "No recipient given"
 #define MSG_ERR_NOTEXTTOSEND "No text to send"
 #define MSG_ERR_NONICKNAMEGIVEN "No nickname given"
 #define MSG_ERR_ERRONEUSNICKNAME "Erroneous nickname"
+#define MSG_ERR_INVALIDNICK "Erroneous nickname"
 #define MSG_ERR_NICKNAMEINUSE "Nickname is already in use"
+#define MSG_ERR_WRONGUSER "Invalid username"
+#define MSG_ERR_USERNOTINCHANNEL "They aren't on that channel"
+#define MSG_ERR_USERONCHANNEL "is already on channel"
 #define MSG_ERR_NOTONCHANNEL "You're not on that channel"
 #define MSG_ERR_NOTREGISTERED "You have not registered"
 #define MSG_ERR_NEEDMOREPARAMS "Not enough parameters"
@@ -141,6 +152,9 @@
 #define MSG_RPL_ENDOFWHOIS "End of /WHOIS list"
 #define MSG_RPL_LISTEND "End of /LIST"
 #define MSG_RPL_ENDOFNAMES "End of /NAMES list"
+#define MSG_ERR_NOSUCHCHANNEL "No such channel"
+#define MSG_NOTOPIC "No topic is set"
+#define RPL_TOPICWHOTIME 333
 
 // ============================================================================
 //                          CHANNEL MESSAGES

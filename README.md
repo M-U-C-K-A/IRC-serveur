@@ -148,7 +148,7 @@ irssi
 
 La documentation détaillée est organisée dans le dossier `docs/` :
 
-- **[PROTOCOL.md](docs/PROTOCOL.md)** : Explications du protocole IRC
+- **[protocol.md](docs/protocol.md)** : Explications du protocole IRC
   - Format des messages
   - Commandes IRC détaillées
   - Codes de réponse
@@ -158,7 +158,7 @@ La documentation détaillée est organisée dans le dossier `docs/` :
   - Classes et modules
   - Flux de données
   
-- **[TECHNICAL.md](docs/TECHNICAL.md)** : Concepts techniques
+- **[technical.md](docs/technical.md)** : Concepts techniques
   - I/O non-bloquantes
   - Multiplexage avec poll/select
   - Gestion des sockets
@@ -168,6 +168,11 @@ La documentation détaillée est organisée dans le dossier `docs/` :
   - Étapes de développement
   - Détails des commandes
   - Gestion des erreurs
+
+- **[commands.md](docs/commands.md)** : Détails des commandes
+  - Concepts et Notions clés
+  - Workflows
+  - Références RFC
 
   ![commande](command.png)
 
@@ -179,9 +184,9 @@ ft_irc/
 ├── Makefile                  # Compilation du projet
 ├── fr.subject.txt           # Sujet original
 ├── docs/                    # Documentation détaillée
-│   ├── PROTOCOL.md          # Protocole IRC
+│   ├── protocol.md          # Protocole IRC
 │   ├── ARCHITECTURE.md      # Architecture du serveur
-│   ├── TECHNICAL.md         # Concepts techniques
+│   ├── technical.md         # Concepts techniques
 │   └── IMPLEMENTATION.md    # Guide d'implémentation
 ├── srcs/                    # Code source
 │   ├── main.cpp

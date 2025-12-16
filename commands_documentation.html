@@ -1,0 +1,677 @@
+<!DOCTYPE html>
+<html lang="fr" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>IRC Commands Documentation</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        'irc-dark': '#0f172a',
+                        'irc-darker': '#020617',
+                        'irc-accent': '#38bdf8',
+                        'irc-highlight': '#22d3ee',
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .fade-in {
+            animation: fadeIn 0.5s ease-out;
+        }
+    </style>
+</head>
+<body class="bg-irc-darker text-gray-100 min-h-screen">
+    <!-- Header -->
+    <header class="bg-gradient-to-r from-irc-dark to-slate-900 border-b border-gray-800 sticky top-0 z-50 backdrop-blur-sm bg-opacity-90">
+        <div class="max-w-7xl mx-auto px-6 py-6">
+            <div class="flex items-center justify-between">
+                <div>
+                    <h1 class="text-4xl font-bold bg-gradient-to-r from-irc-accent to-irc-highlight bg-clip-text text-transparent">
+                        🚀 IRC Server Commands
+                    </h1>
+                    <p class="text-gray-400 mt-2">Documentation complète des commandes IRC • ft_irc Project</p>
+                </div>
+                <div class="hidden md:flex space-x-4">
+                    <span class="px-3 py-1 bg-green-900/30 text-green-400 rounded-full text-sm border border-green-700">C++98</span>
+                    <span class="px-3 py-1 bg-blue-900/30 text-blue-400 rounded-full text-sm border border-blue-700">RFC 1459</span>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Navigation -->
+    <nav class="bg-irc-dark border-b border-gray-800 sticky top-24 z-40 backdrop-blur-sm bg-opacity-90">
+        <div class="max-w-7xl mx-auto px-6 py-4">
+            <div class="flex space-x-6 overflow-x-auto">
+                <a href="#registration" class="text-gray-300 hover:text-irc-accent whitespace-nowrap transition-colors">🔐 Registration</a>
+                <a href="#channel" class="text-gray-300 hover:text-irc-accent whitespace-nowrap transition-colors">📺 Channel</a>
+                <a href="#messaging" class="text-gray-300 hover:text-irc-accent whitespace-nowrap transition-colors">💬 Messaging</a>
+                <a href="#operator" class="text-gray-300 hover:text-irc-accent whitespace-nowrap transition-colors">👑 Operator</a>
+                <a href="#query" class="text-gray-300 hover:text-irc-accent whitespace-nowrap transition-colors">🔍 Query</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="max-w-7xl mx-auto px-6 py-12">
+        <!-- Intro -->
+        <section class="mb-16 fade-in">
+            <div class="bg-gradient-to-br from-slate-800/50 to-slate-900/50 rounded-2xl p-8 border border-slate-700">
+                <h2 class="text-3xl font-bold mb-4 text-white">📖 Vue d'ensemble</h2>
+                <p class="text-gray-300 leading-relaxed mb-4">
+                    Cette documentation présente en détail chaque commande IRC implémentée dans le serveur ft_irc. 
+                    Chaque commande est organisée par catégorie et décrit son rôle, les concepts techniques impliqués, 
+                    et sa place dans le workflow global de l'application.
+                </p>
+                <div class="grid md:grid-cols-3 gap-4 mt-6">
+                    <div class="bg-irc-dark/50 p-4 rounded-lg border border-gray-700">
+                        <div class="text-2xl mb-2">⚡</div>
+                        <div class="text-sm text-gray-400">Architecture</div>
+                        <div class="text-lg font-semibold text-white">Event-Driven</div>
+                    </div>
+                    <div class="bg-irc-dark/50 p-4 rounded-lg border border-gray-700">
+                        <div class="text-2xl mb-2">🔄</div>
+                        <div class="text-sm text-gray-400">I/O</div>
+                        <div class="text-lg font-semibold text-white">Non-blocking</div>
+                    </div>
+                    <div class="bg-irc-dark/50 p-4 rounded-lg border border-gray-700">
+                        <div class="text-2xl mb-2">📡</div>
+                        <div class="text-sm text-gray-400">Protocol</div>
+                        <div class="text-lg font-semibold text-white">TCP/IP</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Registration Commands -->
+        <section id="registration" class="mb-16 fade-in">
+            <h2 class="text-3xl font-bold mb-8 flex items-center">
+                <span class="text-4xl mr-4">🔐</span>
+                <span class="bg-gradient-to-r from-purple-400 to-pink-400 bg-clip-text text-transparent">Registration Commands</span>
+            </h2>
+            <div class="space-y-6">
+                <!-- PASS -->
+                <div class="bg-gradient-to-br from-slate-800/50 to-slate-900/50 rounded-xl p-6 border border-slate-700 hover:border-irc-accent transition-all">
+                    <div class="flex items-start justify-between mb-4">
+                        <h3 class="text-2xl font-bold text-white flex items-center">
+                            <span class="text-purple-400 mr-3">▸</span>PASS.cpp
+                        </h3>
+                        <span class="px-3 py-1 bg-purple-900/30 text-purple-300 rounded-full text-xs border border-purple-700">Authentification</span>
+                    </div>
+                    <div class="space-y-4">
+                        <div>
+                            <h4 class="text-sm font-semibold text-gray-400 uppercase mb-2">📌 Rôle</h4>
+                            <p class="text-gray-300">Authentifie le client avec le mot de passe du serveur. Première commande requise lors de la connexion.</p>
+                        </div>
+                        <div>
+                            <h4 class="text-sm font-semibold text-gray-400 uppercase mb-2">🔑 Concepts</h4>
+                            <div class="flex flex-wrap gap-2">
+                                <span class="px-3 py-1 bg-slate-700/50 text-gray-300 rounded-md text-sm">Authentification</span>
+                                <span class="px-3 py-1 bg-slate-700/50 text-gray-300 rounded-md text-sm">Sécurité</span>
+                                <span class="px-3 py-1 bg-slate-700/50 text-gray-300 rounded-md text-sm">État utilisateur</span>
+                            </div>
+                        </div>
+                        <div>
+                            <h4 class="text-sm font-semibold text-gray-400 uppercase mb-2">🔄 Workflow</h4>
+                            <p class="text-gray-300 font-mono text-sm bg-irc-darker p-3 rounded-lg">
+                                Client → PASS → Validation → setHasPass() → Attente NICK/USER
+                            </p>
+                        </div>
+                        <div>
+                            <h4 class="text-sm font-semibold text-gray-400 uppercase mb-2">📍 Localisation</h4>
+                            <code class="text-irc-highlight">srcs/commands/registration/Pass.cpp</code>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- NICK -->
+                <div class="bg-gradient-to-br from-slate-800/50 to-slate-900/50 rounded-xl p-6 border border-slate-700 hover:border-irc-accent transition-all">
+                    <div class="flex items-start justify-between mb-4">
+                        <h3 class="text-2xl font-bold text-white flex items-center">
+                            <span class="text-purple-400 mr-3">▸</span>NICK.cpp
+                        </h3>
+                        <span class="px-3 py-1 bg-purple-900/30 text-purple-300 rounded-full text-xs border border-purple-700">Identification</span>
+                    </div>
+                    <div class="space-y-4">
+                        <div>
+                            <h4 class="text-sm font-semibold text-gray-400 uppercase mb-2">📌 Rôle</h4>
+                            <p class="text-gray-300">Définit ou change le pseudonyme (nickname) de l'utilisateur. Doit être unique sur le serveur.</p>
+                        </div>
+                        <div>
+                            <h4 class="text-sm font-semibold text-gray-400 uppercase mb-2">🔑 Concepts</h4>
+                            <div class="flex flex-wrap gap-2">
+                                <span class="px-3 py-1 bg-slate-700/50 text-gray-300 rounded-md text-sm">Identité utilisateur</span>
+                                <span class="px-3 py-1 bg-slate-700/50 text-gray-300 rounded-md text-sm">Validation format</span>
+                                <span class="px-3 py-1 bg-slate-700/50 text-gray-300 rounded-md text-sm">Unicité</span>
+                                <span class="px-3 py-1 bg-slate-700/50 text-gray-300 rounded-md text-sm">Collision detection</span>
+                            </div>
+                        </div>
+                        <div>
+                            <h4 class="text-sm font-semibold text-gray-400 uppercase mb-2">🔄 Workflow</h4>
+                            <p class="text-gray-300 font-mono text-sm bg-irc-darker p-3 rounded-lg">
+                                Client → NICK alice → nickAlreadyInUse() → setNickname() → tryRegisterUser()
+                            </p>
+                        </div>
+                        <div>
+                            <h4 class="text-sm font-semibold text-gray-400 uppercase mb-2">📍 Localisation</h4>
+                            <code class="text-irc-highlight">srcs/commands/registration/Nick.cpp</code>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- USER -->
+                <div class="bg-gradient-to-br from-slate-800/50 to-slate-900/50 rounded-xl p-6 border border-slate-700 hover:border-irc-accent transition-all">
+                    <div class="flex items-start justify-between mb-4">
+                        <h3 class="text-2xl font-bold text-white flex items-center">
+                            <span class="text-purple-400 mr-3">▸</span>USER.cpp
+                        </h3>
+                        <span class="px-3 py-1 bg-purple-900/30 text-purple-300 rounded-full text-xs border border-purple-700">Enregistrement</span>
+                    </div>
+                    <div class="space-y-4">
+                        <div>
+                            <h4 class="text-sm font-semibold text-gray-400 uppercase mb-2">📌 Rôle</h4>
+                            <p class="text-gray-300">Complète l'enregistrement avec username et realname. Déclenche le message de bienvenue si PASS et NICK sont validés.</p>
+                        </div>
+                        <div>
+                            <h4 class="text-sm font-semibold text-gray-400 uppercase mb-2">🔑 Concepts</h4>
+                            <div class="flex flex-wrap gap-2">
+                                <span class="px-3 py-1 bg-slate-700/50 text-gray-300 rounded-md text-sm">Enregistrement complet</span>
+                                <span class="px-3 py-1 bg-slate-700/50 text-gray-300 rounded-md text-sm">État de connexion</span>
+                                <span class="px-3 py-1 bg-slate-700/50 text-gray-300 rounded-md text-sm">Welcome messages</span>
+                                <span class="px-3 py-1 bg-slate-700/50 text-gray-300 rounded-md text-sm">RPL_WELCOME (001)</span>
+                            </div>
+                        </div>
+                        <div>
+                            <h4 class="text-sm font-semibold text-gray-400 uppercase mb-2">🔄 Workflow</h4>
+                            <p class="text-gray-300 font-mono text-sm bg-irc-darker p-3 rounded-lg">
+                                Client → USER → setUsername() → tryRegisterUser() → welcomeUser() → RPL 001-003
+                            </p>
+                        </div>
+                        <div>
+                            <h4 class="text-sm font-semibold text-gray-400 uppercase mb-2">📍 Localisation</h4>
+                            <code class="text-irc-highlight">srcs/commands/registration/User.cpp</code>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Channel Commands -->
+        <section id="channel" class="mb-16 fade-in">
+            <h2 class="text-3xl font-bold mb-8 flex items-center">
+                <span class="text-4xl mr-4">📺</span>
+                <span class="bg-gradient-to-r from-blue-400 to-cyan-400 bg-clip-text text-transparent">Channel Commands</span>
+            </h2>
+            <div class="space-y-6">
+                <!-- JOIN -->
+                <div class="bg-gradient-to-br from-slate-800/50 to-slate-900/50 rounded-xl p-6 border border-slate-700 hover:border-irc-accent transition-all">
+                    <div class="flex items-start justify-between mb-4">
+                        <h3 class="text-2xl font-bold text-white flex items-center">
+                            <span class="text-blue-400 mr-3">▸</span>JOIN.cpp
+                        </h3>
+                        <span class="px-3 py-1 bg-blue-900/30 text-blue-300 rounded-full text-xs border border-blue-700">Accès canal</span>
+                    </div>
+                    <div class="space-y-4">
+                        <div>
+                            <h4 class="text-sm font-semibold text-gray-400 uppercase mb-2">📌 Rôle</h4>
+                            <p class="text-gray-300">Permet à un utilisateur de rejoindre un canal. Crée le canal s'il n'existe pas et donne les droits d'opérateur au créateur.</p>
+                        </div>
+                        <div>
+                            <h4 class="text-sm font-semibold text-gray-400 uppercase mb-2">🔑 Concepts</h4>
+                            <div class="flex flex-wrap gap-2">
+                                <span class="px-3 py-1 bg-slate-700/50 text-gray-300 rounded-md text-sm">Création canal</span>
+                                <span class="px-3 py-1 bg-slate-700/50 text-gray-300 rounded-md text-sm">Modes canal (+i, +k, +l)</span>
+                                <span class="px-3 py-1 bg-slate-700/50 text-gray-300 rounded-md text-sm">Permissions</span>
+                                <span class="px-3 py-1 bg-slate-700/50 text-gray-300 rounded-md text-sm">Liste invités</span>
+                                <span class="px-3 py-1 bg-slate-700/50 text-gray-300 rounded-md text-sm">Broadcast</span>
+                            </div>
+                        </div>
+                        <div>
+                            <h4 class="text-sm font-semibold text-gray-400 uppercase mb-2">🔄 Workflow</h4>
+                            <p class="text-gray-300 font-mono text-sm bg-irc-darker p-3 rounded-lg">
+                                Client → JOIN #general → channelExists() → canJoin() → addMember() → notifyJoin() → RPL_NAMEREPLY
+                            </p>
+                        </div>
+                        <div>
+                            <h4 class="text-sm font-semibold text-gray-400 uppercase mb-2">📍 Localisation</h4>
+                            <code class="text-irc-highlight">srcs/commands/channel/Join.cpp</code>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- PART -->
+                <div class="bg-gradient-to-br from-slate-800/50 to-slate-900/50 rounded-xl p-6 border border-slate-700 hover:border-irc-accent transition-all">
+                    <div class="flex items-start justify-between mb-4">
+                        <h3 class="text-2xl font-bold text-white flex items-center">
+                            <span class="text-blue-400 mr-3">▸</span>PART.cpp
+                        </h3>
+                        <span class="px-3 py-1 bg-blue-900/30 text-blue-300 rounded-full text-xs border border-blue-700">Sortie canal</span>
+                    </div>
+                    <div class="space-y-4">
+                        <div>
+                            <h4 class="text-sm font-semibold text-gray-400 uppercase mb-2">📌 Rôle</h4>
+                            <p class="text-gray-300">Permet à un utilisateur de quitter un canal. Notifie tous les membres du canal du départ.</p>
+                        </div>
+                        <div>
+                            <h4 class="text-sm font-semibold text-gray-400 uppercase mb-2">🔑 Concepts</h4>
+                            <div class="flex flex-wrap gap-2">
+                                <span class="px-3 py-1 bg-slate-700/50 text-gray-300 rounded-md text-sm">Gestion membres</span>
+                                <span class="px-3 py-1 bg-slate-700/50 text-gray-300 rounded-md text-sm">Notification broadcast</span>
+                                <span class="px-3 py-1 bg-slate-700/50 text-gray-300 rounded-md text-sm">Message optionnel</span>
+                            </div>
+                        </div>
+                        <div>
+                            <h4 class="text-sm font-semibold text-gray-400 uppercase mb-2">🔄 Workflow</h4>
+                            <p class="text-gray-300 font-mono text-sm bg-irc-darker p-3 rounded-lg">
+                                Client → PART #general :Goodbye → removeMember() → notifyPart() → Broadcast
+                            </p>
+                        </div>
+                        <div>
+                            <h4 class="text-sm font-semibold text-gray-400 uppercase mb-2">📍 Localisation</h4>
+                            <code class="text-irc-highlight">srcs/commands/channel/Part.cpp</code>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- KICK -->
+                <div class="bg-gradient-to-br from-slate-800/50 to-slate-900/50 rounded-xl p-6 border border-slate-700 hover:border-irc-accent transition-all">
+                    <div class="flex items-start justify-between mb-4">
+                        <h3 class="text-2xl font-bold text-white flex items-center">
+                            <span class="text-blue-400 mr-3">▸</span>KICK.cpp
+                        </h3>
+                        <span class="px-3 py-1 bg-red-900/30 text-red-300 rounded-full text-xs border border-red-700">Opérateur requis</span>
+                    </div>
+                    <div class="space-y-4">
+                        <div>
+                            <h4 class="text-sm font-semibold text-gray-400 uppercase mb-2">📌 Rôle</h4>
+                            <p class="text-gray-300">Permet à un opérateur de canal d'éjecter un utilisateur. Nécessite les privilèges d'opérateur.</p>
+                        </div>
+                        <div>
+                            <h4 class="text-sm font-semibold text-gray-400 uppercase mb-2">🔑 Concepts</h4>
+                            <div class="flex flex-wrap gap-2">
+                                <span class="px-3 py-1 bg-slate-700/50 text-gray-300 rounded-md text-sm">Privilèges opérateur</span>
+                                <span class="px-3 py-1 bg-slate-700/50 text-gray-300 rounded-md text-sm">Modération canal</span>
+                                <span class="px-3 py-1 bg-slate-700/50 text-gray-300 rounded-md text-sm">ERR_CHANOPRIVSNEEDED</span>
+                                <span class="px-3 py-1 bg-slate-700/50 text-gray-300 rounded-md text-sm">Message raison</span>
+                            </div>
+                        </div>
+                        <div>
+                            <h4 class="text-sm font-semibold text-gray-400 uppercase mb-2">🔄 Workflow</h4>
+                            <p class="text-gray-300 font-mono text-sm bg-irc-darker p-3 rounded-lg">
+                                Op → KICK #chan bob :spam → isOperator() → removeMember() → broadcastKick()
+                            </p>
+                        </div>
+                        <div>
+                            <h4 class="text-sm font-semibold text-gray-400 uppercase mb-2">📍 Localisation</h4>
+                            <code class="text-irc-highlight">srcs/commands/channel/Kick.cpp</code>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- TOPIC -->
+                <div class="bg-gradient-to-br from-slate-800/50 to-slate-900/50 rounded-xl p-6 border border-slate-700 hover:border-irc-accent transition-all">
+                    <div class="flex items-start justify-between mb-4">
+                        <h3 class="text-2xl font-bold text-white flex items-center">
+                            <span class="text-blue-400 mr-3">▸</span>TOPIC.cpp
+                        </h3>
+                        <span class="px-3 py-1 bg-blue-900/30 text-blue-300 rounded-full text-xs border border-blue-700">Thème canal</span>
+                    </div>
+                    <div class="space-y-4">
+                        <div>
+                            <h4 class="text-sm font-semibold text-gray-400 uppercase mb-2">📌 Rôle</h4>
+                            <p class="text-gray-300">Affiche ou modifie le thème (topic) d'un canal. La modification peut être restreinte aux opérateurs (mode +t).</p>
+                        </div>
+                        <div>
+                            <h4 class="text-sm font-semibold text-gray-400 uppercase mb-2">🔑 Concepts</h4>
+                            <div class="flex flex-wrap gap-2">
+                                <span class="px-3 py-1 bg-slate-700/50 text-gray-300 rounded-md text-sm">Mode +t</span>
+                                <span class="px-3 py-1 bg-slate-700/50 text-gray-300 rounded-md text-sm">RPL_TOPIC (332)</span>
+                                <span class="px-3 py-1 bg-slate-700/50 text-gray-300 rounded-md text-sm">RPL_NOTOPIC (331)</span>
+                                <span class="px-3 py-1 bg-slate-700/50 text-gray-300 rounded-md text-sm">Timestamp</span>
+                            </div>
+                        </div>
+                        <div>
+                            <h4 class="text-sm font-semibold text-gray-400 uppercase mb-2">🔄 Workflow</h4>
+                            <p class="text-gray-300 font-mono text-sm bg-irc-darker p-3 rounded-lg">
+                                Client → TOPIC #chan :New topic → checkPermissions() → setTopic() → broadcastNewTopic()
+                            </p>
+                        </div>
+                        <div>
+                            <h4 class="text-sm font-semibold text-gray-400 uppercase mb-2">📍 Localisation</h4>
+                            <code class="text-irc-highlight">srcs/commands/channel/Topic.cpp</code>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- INVITE -->
+                <div class="bg-gradient-to-br from-slate-800/50 to-slate-900/50 rounded-xl p-6 border border-slate-700 hover:border-irc-accent transition-all">
+                    <div class="flex items-start justify-between mb-4">
+                        <h3 class="text-2xl font-bold text-white flex items-center">
+                            <span class="text-blue-400 mr-3">▸</span>INVITE.cpp
+                        </h3>
+                        <span class="px-3 py-1 bg-blue-900/30 text-blue-300 rounded-full text-xs border border-blue-700">Invitation</span>
+                    </div>
+                    <div class="space-y-4">
+                        <div>
+                            <h4 class="text-sm font-semibold text-gray-400 uppercase mb-2">📌 Rôle</h4>
+                            <p class="text-gray-300">Invite un utilisateur sur un canal. Nécessaire pour les canaux en mode +i (invite-only).</p>
+                        </div>
+                        <div>
+                            <h4 class="text-sm font-semibold text-gray-400 uppercase mb-2">🔑 Concepts</h4>
+                            <div class="flex flex-wrap gap-2">
+                                <span class="px-3 py-1 bg-slate-700/50 text-gray-300 rounded-md text-sm">Mode +i</span>
+                                <span class="px-3 py-1 bg-slate-700/50 text-gray-300 rounded-md text-sm">Liste invitations</span>
+                                <span class="px-3 py-1 bg-slate-700/50 text-gray-300 rounded-md text-sm">RPL_INVITING (341)</span>
+                                <span class="px-3 py-1 bg-slate-700/50 text-gray-300 rounded-md text-sm">Notification</span>
+                            </div>
+                        </div>
+                        <div>
+                            <h4 class="text-sm font-semibold text-gray-400 uppercase mb-2">🔄 Workflow</h4>
+                            <p class="text-gray-300 font-mono text-sm bg-irc-darker p-3 rounded-lg">
+                                Client → INVITE bob #private → addToInviteList() → notifyInvite() → RPL_INVITING
+                            </p>
+                        </div>
+                        <div>
+                            <h4 class="text-sm font-semibold text-gray-400 uppercase mb-2">📍 Localisation</h4>
+                            <code class="text-irc-highlight">srcs/commands/channel/Invite.cpp</code>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- MODE -->
+                <div class="bg-gradient-to-br from-slate-800/50 to-slate-900/50 rounded-xl p-6 border border-slate-700 hover:border-irc-accent transition-all">
+                    <div class="flex items-start justify-between mb-4">
+                        <h3 class="text-2xl font-bold text-white flex items-center">
+                            <span class="text-blue-400 mr-3">▸</span>MODE.cpp
+                        </h3>
+                        <span class="px-3 py-1 bg-yellow-900/30 text-yellow-300 rounded-full text-xs border border-yellow-700">Configuration</span>
+                    </div>
+                    <div class="space-y-4">
+                        <div>
+                            <h4 class="text-sm font-semibold text-gray-400 uppercase mb-2">📌 Rôle</h4>
+                            <p class="text-gray-300">Gère les modes du canal : invite-only (+i), topic restricted (+t), key (+k), operator (+o), limit (+l).</p>
+                        </div>
+                        <div>
+                            <h4 class="text-sm font-semibold text-gray-400 uppercase mb-2">🔑 Concepts</h4>
+                            <div class="flex flex-wrap gap-2">
+                                <span class="px-3 py-1 bg-slate-700/50 text-gray-300 rounded-md text-sm">+i (invite-only)</span>
+                                <span class="px-3 py-1 bg-slate-700/50 text-gray-300 rounded-md text-sm">+t (topic restricted)</span>
+                                <span class="px-3 py-1 bg-slate-700/50 text-gray-300 rounded-md text-sm">+k (password)</span>
+                                <span class="px-3 py-1 bg-slate-700/50 text-gray-300 rounded-md text-sm">+o (operator)</span>
+                                <span class="px-3 py-1 bg-slate-700/50 text-gray-300 rounded-md text-sm">+l (user limit)</span>
+                            </div>
+                        </div>
+                        <div>
+                            <h4 class="text-sm font-semibold text-gray-400 uppercase mb-2">🔄 Workflow</h4>
+                            <p class="text-gray-300 font-mono text-sm bg-irc-darker p-3 rounded-lg">
+                                Op → MODE #chan +it → parseMode() → setMode() → notifyMode() → Broadcast
+                            </p>
+                        </div>
+                        <div>
+                            <h4 class="text-sm font-semibold text-gray-400 uppercase mb-2">📍 Localisation</h4>
+                            <code class="text-irc-highlight">srcs/commands/channel/Mode.cpp</code>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Messaging Commands -->
+        <section id="messaging" class="mb-16 fade-in">
+            <h2 class="text-3xl font-bold mb-8 flex items-center">
+                <span class="text-4xl mr-4">💬</span>
+                <span class="bg-gradient-to-r from-green-400 to-emerald-400 bg-clip-text text-transparent">Messaging Commands</span>
+            </h2>
+            <div class="space-y-6">
+                <!-- PRIVMSG -->
+                <div class="bg-gradient-to-br from-slate-800/50 to-slate-900/50 rounded-xl p-6 border border-slate-700 hover:border-irc-accent transition-all">
+                    <div class="flex items-start justify-between mb-4">
+                        <h3 class="text-2xl font-bold text-white flex items-center">
+                            <span class="text-green-400 mr-3">▸</span>PRIVMSG.cpp
+                        </h3>
+                        <span class="px-3 py-1 bg-green-900/30 text-green-300 rounded-full text-xs border border-green-700">Messagerie</span>
+                    </div>
+                    <div class="space-y-4">
+                        <div>
+                            <h4 class="text-sm font-semibold text-gray-400 uppercase mb-2">📌 Rôle</h4>
+                            <p class="text-gray-300">Envoie un message privé à un utilisateur ou un message public à un canal. Commande principale de communication.</p>
+                        </div>
+                        <div>
+                            <h4 class="text-sm font-semibold text-gray-400 uppercase mb-2">🔑 Concepts</h4>
+                            <div class="flex flex-wrap gap-2">
+                                <span class="px-3 py-1 bg-slate-700/50 text-gray-300 rounded-md text-sm">Messages privés</span>
+                                <span class="px-3 py-1 bg-slate-700/50 text-gray-300 rounded-md text-sm">Broadcast canal</span>
+                                <span class="px-3 py-1 bg-slate-700/50 text-gray-300 rounded-md text-sm">DCC (bonus)</span>
+                                <span class="px-3 py-1 bg-slate-700/50 text-gray-300 rounded-md text-sm">ERR_NOSUCHNICK</span>
+                            </div>
+                        </div>
+                        <div>
+                            <h4 class="text-sm font-semibold text-gray-400 uppercase mb-2">🔄 Workflow</h4>
+                            <p class="text-gray-300 font-mono text-sm bg-irc-darker p-3 rounded-lg">
+                                Client → PRIVMSG #chan :Hello → broadcastToChannel() → send() à tous membres
+                            </p>
+                        </div>
+                        <div>
+                            <h4 class="text-sm font-semibold text-gray-400 uppercase mb-2">📍 Localisation</h4>
+                            <code class="text-irc-highlight">srcs/commands/messaging/Privmsg.cpp</code>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- NOTICE -->
+                <div class="bg-gradient-to-br from-slate-800/50 to-slate-900/50 rounded-xl p-6 border border-slate-700 hover:border-irc-accent transition-all">
+                    <div class="flex items-start justify-between mb-4">
+                        <h3 class="text-2xl font-bold text-white flex items-center">
+                            <span class="text-green-400 mr-3">▸</span>NOTICE.cpp
+                        </h3>
+                        <span class="px-3 py-1 bg-green-900/30 text-green-300 rounded-full text-xs border border-green-700">Notification</span>
+                    </div>
+                    <div class="space-y-4">
+                        <div>
+                            <h4 class="text-sm font-semibold text-gray-400 uppercase mb-2">📌 Rôle</h4>
+                            <p class="text-gray-300">Similaire à PRIVMSG mais sans réponse automatique. Utilisé pour éviter les boucles infinies (bots, serveurs).</p>
+                        </div>
+                        <div>
+                            <h4 class="text-sm font-semibold text-gray-400 uppercase mb-2">🔑 Concepts</h4>
+                            <div class="flex flex-wrap gap-2">
+                                <span class="px-3 py-1 bg-slate-700/50 text-gray-300 rounded-md text-sm">Pas de réponse auto</span>
+                                <span class="px-3 py-1 bg-slate-700/50 text-gray-300 rounded-md text-sm">Prévention boucles</span>
+                                <span class="px-3 py-1 bg-slate-700/50 text-gray-300 rounded-md text-sm">Messages serveur</span>
+                                <span class="px-3 py-1 bg-slate-700/50 text-gray-300 rounded-md text-sm">Bots IRC</span>
+                            </div>
+                        </div>
+                        <div>
+                            <h4 class="text-sm font-semibold text-gray-400 uppercase mb-2">🔄 Workflow</h4>
+                            <p class="text-gray-300 font-mono text-sm bg-irc-darker p-3 rounded-lg">
+                                Bot → NOTICE #chan :Status update → send() (SANS réponses d'erreur)
+                            </p>
+                        </div>
+                        <div>
+                            <h4 class="text-sm font-semibold text-gray-400 uppercase mb-2">📍 Localisation</h4>
+                            <code class="text-irc-highlight">srcs/commands/messaging/Notice.cpp</code>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- AWAY -->
+                <div class="bg-gradient-to-br from-slate-800/50 to-slate-900/50 rounded-xl p-6 border border-slate-700 hover:border-irc-accent transition-all">
+                    <div class="flex items-start justify-between mb-4">
+                        <h3 class="text-2xl font-bold text-white flex items-center">
+                            <span class="text-green-400 mr-3">▸</span>AWAY.cpp
+                        </h3>
+                        <span class="px-3 py-1 bg-green-900/30 text-green-300 rounded-full text-xs border border-green-700">Statut</span>
+                    </div>
+                    <div class="space-y-4">
+                        <div>
+                            <h4 class="text-sm font-semibold text-gray-400 uppercase mb-2">📌 Rôle</h4>
+                            <p class="text-gray-300">Définit ou retire le statut "absent" avec un message optionnel. Les PRIVMSG déclenchent une réponse automatique.</p>
+                        </div>
+                        <div>
+                            <h4 class="text-sm font-semibold text-gray-400 uppercase mb-2">🔑 Concepts</h4>
+                            <div class="flex flex-wrap gap-2">
+                                <span class="px-3 py-1 bg-slate-700/50 text-gray-300 rounded-md text-sm">RPL_AWAY (301)</span>
+                                <span class="px-3 py-1 bg-slate-700/50 text-gray-300 rounded-md text-sm">RPL_UNAWAY (305)</span>
+                                <span class="px-3 py-1 bg-slate-700/50 text-gray-300 rounded-md text-sm">RPL_NOWAWAY (306)</span>
+                                <span class="px-3 py-1 bg-slate-700/50 text-gray-300 rounded-md text-sm">État utilisateur</span>
+                            </div>
+                        </div>
+                        <div>
+                            <h4 class="text-sm font-semibold text-gray-400 uppercase mb-2">🔄 Workflow</h4>
+                            <p class="text-gray-300 font-mono text-sm bg-irc-darker p-3 rounded-lg">
+                                Client → AWAY :Lunch → setAwayMessage() → RPL_NOWAWAY → Auto-reply sur PRIVMSG
+                            </p>
+                        </div>
+                        <div>
+                            <h4 class="text-sm font-semibold text-gray-400 uppercase mb-2">📍 Localisation</h4>
+                            <code class="text-irc-highlight">srcs/commands/messaging/Away.cpp</code>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Operator Commands -->
+        <section id="operator" class="mb-16 fade-in">
+            <h2 class="text-3xl font-bold mb-8 flex items-center">
+                <span class="text-4xl mr-4">👑</span>
+                <span class="bg-gradient-to-r from-red-400 to-orange-400 bg-clip-text text-transparent">Operator Commands</span>
+            </h2>
+            <div class="bg-gradient-to-br from-slate-800/50 to-slate-900/50 rounded-xl p-6 border border-slate-700">
+                <p class="text-gray-300">
+                    Les commandes opérateur (OPER, KILL, RESTART, etc.) permettent l'administration du serveur IRC.
+                    Elles nécessitent des privilèges serveur élevés et sont utilisées pour la modération globale,
+                    la gestion réseau et la maintenance du serveur.
+                </p>
+                <div class="mt-4 p-4 bg-yellow-900/20 border-l-4 border-yellow-500 rounded">
+                    <p class="text-yellow-200 text-sm">
+                        ⚠️ Ces commandes sont réservées aux opérateurs IRC (IRC operators) et ne doivent pas être confondues avec les opérateurs de canal (channel operators).
+                    </p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Query Commands -->
+        <section id="query" class="mb-16 fade-in">
+            <h2 class="text-3xl font-bold mb-8 flex items-center">
+                <span class="text-4xl mr-4">🔍</span>
+                <span class="bg-gradient-to-r from-yellow-400 to-amber-400 bg-clip-text text-transparent">Query Commands</span>
+            </h2>
+            <div class="bg-gradient-to-br from-slate-800/50 to-slate-900/50 rounded-xl p-6 border border-slate-700">
+                <p class="text-gray-300 mb-4">
+                    Les commandes de requête permettent d'obtenir des informations sur les utilisateurs, canaux et le serveur.
+                    Elles sont essentielles pour la découverte et la navigation dans le réseau IRC.
+                </p>
+                <div class="grid md:grid-cols-2 gap-4">
+                    <div class="bg-irc-dark/50 p-4 rounded-lg border border-gray-700">
+                        <h4 class="font-bold text-white mb-2">WHO / WHOIS</h4>
+                        <p class="text-sm text-gray-400">Informations utilisateur détaillées</p>
+                    </div>
+                    <div class="bg-irc-dark/50 p-4 rounded-lg border border-gray-700">
+                        <h4 class="font-bold text-white mb-2">LIST / NAMES</h4>
+                        <p class="text-sm text-gray-400">Liste canaux et membres</p>
+                    </div>
+                    <div class="bg-irc-dark/50 p-4 rounded-lg border border-gray-700">
+                        <h4 class="font-bold text-white mb-2">VERSION / TIME</h4>
+                        <p class="text-sm text-gray-400">Informations serveur</p>
+                    </div>
+                    <div class="bg-irc-dark/50 p-4 rounded-lg border border-gray-700">
+                        <h4 class="font-bold text-white mb-2">INFO / MOTD</h4>
+                        <p class="text-sm text-gray-400">Documentation serveur</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Workflow Global -->
+        <section class="mb-16 fade-in">
+            <h2 class="text-3xl font-bold mb-8 flex items-center">
+                <span class="text-4xl mr-4">🔄</span>
+                <span class="bg-gradient-to-r from-irc-accent to-irc-highlight bg-clip-text text-transparent">Workflow Global</span>
+            </h2>
+            <div class="bg-gradient-to-br from-slate-800/50 to-slate-900/50 rounded-xl p-8 border border-slate-700">
+                <div class="space-y-6">
+                    <div class="flex items-start space-x-4">
+                        <div class="flex-shrink-0 w-12 h-12 bg-purple-600 rounded-full flex items-center justify-center text-white font-bold">1</div>
+                        <div>
+                            <h3 class="text-xl font-bold text-white mb-2">Connexion & Authentification</h3>
+                            <p class="text-gray-300">Client → <code class="text-irc-highlight">PASS</code> → <code class="text-irc-highlight">NICK</code> → <code class="text-irc-highlight">USER</code> → Enregistré (RPL_WELCOME)</p>
+                        </div>
+                    </div>
+                    <div class="flex items-start space-x-4">
+                        <div class="flex-shrink-0 w-12 h-12 bg-blue-600 rounded-full flex items-center justify-center text-white font-bold">2</div>
+                        <div>
+                            <h3 class="text-xl font-bold text-white mb-2">Rejoindre Canal</h3>
+                            <p class="text-gray-300"><code class="text-irc-highlight">JOIN #channel</code> → Vérif permissions → addMember() → Notification broadcast</p>
+                        </div>
+                    </div>
+                    <div class="flex items-start space-x-4">
+                        <div class="flex-shrink-0 w-12 h-12 bg-green-600 rounded-full flex items-center justify-center text-white font-bold">3</div>
+                        <div>
+                            <h3 class="text-xl font-bold text-white mb-2">Communication</h3>
+                            <p class="text-gray-300"><code class="text-irc-highlight">PRIVMSG</code> / <code class="text-irc-highlight">NOTICE</code> → Broadcast ou message privé</p>
+                        </div>
+                    </div>
+                    <div class="flex items-start space-x-4">
+                        <div class="flex-shrink-0 w-12 h-12 bg-yellow-600 rounded-full flex items-center justify-center text-white font-bold">4</div>
+                        <div>
+                            <h3 class="text-xl font-bold text-white mb-2">Administration</h3>
+                            <p class="text-gray-300">Opérateurs → <code class="text-irc-highlight">MODE</code>, <code class="text-irc-highlight">KICK</code>, <code class="text-irc-highlight">TOPIC</code>, <code class="text-irc-highlight">INVITE</code></p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-irc-dark border-t border-gray-800 py-8 mt-16">
+        <div class="max-w-7xl mx-auto px-6 text-center">
+            <p class="text-gray-400">
+                📚 Documentation générée pour <strong class="text-white">ft_irc</strong> • 
+                École 42 Project • 
+                <span class="text-irc-accent">C++98</span> • 
+                <span class="text-irc-highlight">RFC 1459</span>
+            </p>
+            <p class="text-gray-500 text-sm mt-2">
+                Architecture event-driven avec epoll • Non-blocking I/O • TCP/IP
+            </p>
+        </div>
+    </footer>
+
+    <script>
+        // Smooth scroll for navigation
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                }
+            });
+        });
+
+        // Add fade-in animation on scroll
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('fade-in');
+                }
+            });
+        }, { threshold: 0.1 });
+
+        document.querySelectorAll('section').forEach(section => {
+            observer.observe(section);
+        });
+    </script>
+</body>
+</html>

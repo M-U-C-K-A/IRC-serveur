@@ -19,6 +19,7 @@
 #include "User.hpp"
 #include "Channel.hpp"
 #include "Utils.hpp"
+#include "IrcReplies.hpp"
 
 #define MAX_USER 1024
 #define MAX_EVENTS 10
@@ -67,7 +68,7 @@ public:
 	void	acceptUser();
 	void	parseInput(int userFd);
 	bool	hasPassword() const;
-	void	sendRPL(const int &clientFd, const std::string code, const std::string &nick, const std::string &message) const;
+	void	sendRPL(const int &clientFd, const int code, const std::string &nick, const std::string &message) const;
 	std::vector<std::string> getReqCap(const std::string line);
 
 	void	handleCap(const int &clientFd, const std::string &line);
@@ -114,7 +115,7 @@ public:
 	void						createChannel(const std::string &channelName, int creatorFd);
 	bool						joinExistingChannel(const std::string &channelName, const std::string &key, int userFd);
 	void		broadcastToChannel(const std::string &channelName, const std::string &message, int senderFd);
-	void		sendChannelError(const int &clientFd, const std::string &code, const std::string &nick, const std::string &channel, const std::string &message) const;
+	void		sendChannelError(const int &clientFd, const int code, const std::string &nick, const std::string &channel, const std::string &message) const;
 
 	void		handlePrivateMessage(int clientFd, const std::string &line);
 	void		sendPrivateMessage(const std::string &targetNick, const std::string &message, int senderFd);
@@ -211,6 +212,12 @@ public:
 	void sendRPL_NOTOPIC(const int &clientFd, const std::string &channel);
 	void sendRPL_VERSION(const int &clientFd, const std::string &version, const std::string &debuglevel, const std::string &server, const std::string &comments);
 	void sendRPL_TIME(const int &clientFd, const std::string &server, const std::string &timestr);
+	
+	void sendERR_NEEDMOREPARAMS(const int &clientFd, const std::string &command);
+	void sendERR_BADCHANMASK(const int &clientFd, const std::string &channel);
+	void sendRPL_YOUREOPER(const int &clientFd);
+	void sendRPL_REHASHING(const int &clientFd);
+	void sendError(const int &clientFd, const std::string &message);
 
 	// AWAY command
 	std::string parseAwayMessage(const std::string &line);

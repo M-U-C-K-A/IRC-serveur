@@ -4,6 +4,9 @@
 #include "../includes/Server.hpp"
 #include "../includes/Utils.hpp"
 
+#define PORT 1
+#define PASSWORD 2
+
 void setupSignal() {
 	signal(SIGINT, Server::signalHandler);
 	signal(SIGQUIT, Server::signalHandler);

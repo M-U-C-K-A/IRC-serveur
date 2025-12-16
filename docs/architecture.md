@@ -4,44 +4,49 @@
 
 ```
 ft_irc/
-├── 📄 Makefile                     # Compilation avec couleurs et ASCII art
+├── 📄 Makefile                     # Buildfile moderne avec couleurs
 ├── 📄 README.md                    # Documentation principale
-├── 📄 STATUS.md                    # État du projet
-├── 📄 TESTING.md                   # Guide de tests
-├── 📄 HOW_TO_TEST.sh              # Script d'aide rapide
-├── 📄 test.sh                     # Tests automatiques
-├── 📄 ARCHITECTURE_MAP.md         # Ce fichier
-│
 ├── 📁 docs/                       # Documentation détaillée
-│   ├── PROTOCOL.md                # Protocole IRC
-│   ├── ARCHITECTURE.md            # Architecture du serveur
-│   ├── TECHNICAL.md               # Concepts techniques
-│   └── IMPLEMENTATION.md          # Guide d'implémentation
+│   ├── architecture.md             # Ce fichier - Architecture complète
+│   ├── commands.md                 # Référence des commandes IRC
+│   ├── protocol.md                 # Spécification protocole IRC
+│   ├── technical.md                # Concepts techniques (epoll, sockets)
+│   ├── testing.md                  # Guide de tests
+│   ├── status.md                   # État d'avancement du projet
+│   └── guide_irssi.md              # Guide client irssi
 │
 ├── 📁 includes/                   # Headers C++ (.hpp)
-│   ├── Server.hpp                 # Classe serveur principale
-│   ├── User.hpp                   # Classe utilisateur/client
-│   ├── Channel.hpp                # Classe canal IRC
-│   └── Utils.hpp                  # Définitions et macros
+│   ├── Server.hpp                  # Classe serveur principale
+│   ├── User.hpp                    # Classe utilisateur/client
+│   ├── Channel.hpp                 # Classe canal IRC
+│   ├── Utils.hpp                   # Macros et utilitaires
+│   └── IrcReplies.hpp              # Codes de réponse IRC (ERR_*, RPL_*)
 │
 └── 📁 srcs/                       # Sources C++ (.cpp)
-    ├── main.cpp                   # Point d'entrée du programme
-    ├── User.cpp                   # Implémentation User
-    ├── Channel.cpp                # Implémentation Channel
-    ├── Utils.cpp                  # Fonctions utilitaires
+    ├── main.cpp                    # Point d'entrée du programme
+    ├── User.cpp                    # Implémentation User
+    ├── Channel.cpp                 # Implémentation Channel
+    ├── Utils.cpp                   # Fonctions utilitaires
+    ├── IrcReplies.cpp              # Implémentation réponses IRC
     │
-    └── 📁 server/                 # Modules du serveur
-        ├── Server.cpp             # Serveur principal (socket, epoll, boucle)
-        ├── handleUser.cpp         # Gestion authentification (PASS, NICK, USER)
-        ├── Join.cpp               # Commande JOIN
-        ├── Part.cpp               # Commande PART
-        ├── Kick.cpp               # Commande KICK
-        ├── Topic.cpp              # Commande TOPIC
-        ├── Invite.cpp             # Commande INVITE
-        ├── Mode.cpp               # Commande MODE (+i, +t, +k, +o, +l)
-        ├── message.cpp            # Gestion messages (PRIVMSG)
-        ├── Replay.cpp             # Réponses IRC (RPL_*, ERR_*)
-        └── DCC.cpp                # Transfert de fichiers (bonus)
+    └── 📁 commands/                # Commandes IRC organisées par catégorie
+        ├── 📁 registration/        # Authentification
+        │   ├── Pass.cpp
+        │   ├── Nick.cpp
+        │   └── User.cpp
+        ├── 📁 channel/             # Gestion canaux
+        │   ├── Join.cpp
+        │   ├── Part.cpp
+        │   ├── Kick.cpp
+        │   ├── Topic.cpp
+        │   ├── Invite.cpp
+        │   └── Mode.cpp
+        ├── 📁 messaging/           # Messages
+        │   ├── Privmsg.cpp
+        │   ├── Notice.cpp
+        │   └── Away.cpp
+        ├── 📁 operator/            # Commandes opérateur
+        └── 📁 query/               # Requêtes d'information
 ```
 
 ---
@@ -395,37 +400,37 @@ Channel.cpp
 Utils.cpp
   └─> Utils.hpp
 
-server/Server.cpp
+Server.cpp
   └─> Server.hpp (inclut User, Channel, Utils)
 
-server/handleUser.cpp
+handleUser.cpp
   └─> Server.hpp
 
-server/Join.cpp
+Join.cpp
   └─> Server.hpp
 
-server/Part.cpp
+Part.cpp
   └─> Server.hpp
 
-server/Kick.cpp
+Kick.cpp
   └─> Server.hpp
 
-server/Topic.cpp
+Topic.cpp
   └─> Server.hpp
 
-server/Invite.cpp
+Invite.cpp
   └─> Server.hpp
 
-server/Mode.cpp
+Mode.cpp
   └─> Server.hpp
 
-server/message.cpp
+message.cpp
   └─> Server.hpp
 
-server/Replay.cpp
+Replay.cpp
   └─> Server.hpp
 
-server/DCC.cpp
+DCC.cpp
   └─> Server.hpp
 ```
 

@@ -1,77 +1,22 @@
-/*
-** ============================================================================
-**                         KILL COMMAND - RFC 1459
-** ============================================================================
-**
-**                 Force Disconnect User Flow
-**                              |
-**                              v
-**                    +------------------------+
-**                    | KILL <nick> :<reason>  |
-**                    +------------------------+
-**                              |
-**                              v
-**                    +------------------------+
-**                    | Check if user is IRCOP |
-**                    +------------------------+
-**                         /           \
-**                      YES              NO
-**                       |                |
-**                       v                v
-**              +------------------+  ERR_NOPRIVILEGES (481)
-**              | Find target user |  "Permission Denied"
-**              +------------------+
-**                       |
-**                  /          \
-**              Found         Not Found
-**                |              |
-**                v              v
-**       +----------------+  ERR_NOSUCHNICK (401)
-**       | Check if server|  "No such nick"
-**       +----------------+
-**                |
-**           /         \
-**       User        Server
-**         |            |
-**         v            v
-**  +----------+  ERR_CANTKILLSERVER (483)
-**  | Broadcast|  "You can't kill a server!"
-**  | KILL msg |
-**  +----------+
-**         |
-**         v
-**  +----------+
-**  | Send ERROR|
-**  | to victim |
-**  +----------+
-**         |
-**         v
-**  +----------+
-**  | Close conn|
-**  | Remove user|
-**  +----------+
-**         |
-**         v
-**      💀 KILLED 💀
-**
-**  Format: KILL <nickname> :<reason>
-**  Example: KILL BadUser :Flooding the network
-**
-**  KILL is broadcasted as:
-**  :operator KILL victim :reason
-**
-** ============================================================================
-*/
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   Kill.cpp                                           :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: hdelacou <hdelacou@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/12/16 03:57:42 by hdelacou          #+#    #+#             */
+/*   Updated: 2025/12/16 03:58:00 by hdelacou         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
 
 #include "../../../includes/Server.hpp"
 #include "../../../includes/Utils.hpp"
 
 /*
-**  ┌─────────────────────────────────────────┐
-**  │     parseKillCommand() - Parser         │
-**  │                                         │
-**  │  Extracts target nickname and reason    │
-**  └─────────────────────────────────────────┘
+* This function parses the KILL command
+* @param line the raw command line to parse
+* @return KillParams struct containing target nickname and reason
 */
 struct KillParams {
 	std::string target;
@@ -115,12 +60,9 @@ KillParams Server::parseKillCommand(const std::string &line) {
 }
 
 /*
-**  ┌─────────────────────────────────────────┐
-**  │     findUserByNickname() - Lookup       │
-**  │                                         │
-**  │  Returns file descriptor of user with   │
-**  │  given nickname, or -1 if not found     │
-**  └─────────────────────────────────────────┘
+* This function finds a user by their nickname
+* @param nickname the nickname to search for
+* @return file descriptor of the user, or -1 if not found
 */
 int Server::findUserByNickname(const std::string &nickname) {
 	for (std::map<int, User>::iterator it = this->Users.begin(); 
@@ -132,12 +74,11 @@ int Server::findUserByNickname(const std::string &nickname) {
 }
 
 /*
-**  ┌─────────────────────────────────────────┐
-**  │     broadcastKill() - Notification      │
-**  │                                         │
-**  │  Sends KILL message to all users in     │
-**  │  shared channels with victim            │
-**  └─────────────────────────────────────────┘
+* this fonction will broadcast the KILL command
+* @param operatorFd the operator file descriptor
+* @param victimFd the victim file descriptor
+* @param reason the reason for the kill
+* @return void
 */
 void Server::broadcastKill(const int &operatorFd, const int &victimFd, 
                            const std::string &reason) {
@@ -221,9 +162,7 @@ void Server::handleKill(const int &clientFd, const std::string &line) {
 }
 
 /*
-**  ┌─────────────────────────────────────────┐
-**  │     Error Response Functions            │
-**  └─────────────────────────────────────────┘
+* Error Response Functions for KILL command
 */
 
 // ERR_NOPRIVILEGES (481): Permission Denied - You're not an IRC operator
@@ -251,3 +190,68 @@ void Server::sendERR_CANTKILLSERVER(const int &clientFd) {
 	
 	send(clientFd, response.c_str(), response.length(), 0);
 }
+
+/*
+** ============================================================================
+**                         KILL COMMAND - RFC 1459
+** ============================================================================
+**
+**                 Force Disconnect User Flow
+**                              |
+**                              v
+**                    +------------------------+
+**                    | KILL <nick> :<reason>  |
+**                    +------------------------+
+**                              |
+**                              v
+**                    +------------------------+
+**                    | Check if user is IRCOP |
+**                    +------------------------+
+**                         /           \
+**                      YES              NO
+**                       |                |
+**                       v                v
+**              +------------------+  ERR_NOPRIVILEGES (481)
+**              | Find target user |  "Permission Denied"
+**              +------------------+
+**                       |
+**                  /          \
+**              Found         Not Found
+**                |              |
+**                v              v
+**       +----------------+  ERR_NOSUCHNICK (401)
+**       | Check if server|  "No such nick"
+**       +----------------+
+**                |
+**           /         \
+**       User        Server
+**         |            |
+**         v            v
+**  +----------+  ERR_CANTKILLSERVER (483)
+**  | Broadcast|  "You can't kill a server!"
+**  | KILL msg |
+**  +----------+
+**         |
+**         v
+**  +----------+
+**  | Send ERROR|
+**  | to victim |
+**  +----------+
+**         |
+**         v
+**  +----------+
+**  | Close conn|
+**  | Remove user|
+**  +----------+
+**         |
+**         v
+**      💀 KILLED 💀
+**
+**  Format: KILL <nickname> :<reason>
+**  Example: KILL BadUser :Flooding the network
+**
+**  KILL is broadcasted as:
+**  :operator KILL victim :reason
+**
+** ============================================================================
+*/

@@ -3,125 +3,66 @@
 #                                                         :::      ::::::::    #
 #    Makefile                                           :+:      :+:    :+:    #
 #                                                     +:+ +:+         +:+      #
-#    By: hdelacou                                  +#+  +:+       +#+         #
+#    By: hdelacou <hdelacou@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
-#    Created: 2025/12/03                              #+#    #+#              #
-#    Updated: 2025/12/03                             ###   ########.fr        #
+#    Created: 2025/12/16 02:31:44 by hdelacou          #+#    #+#              #
+#    Updated: 2025/12/16 04:10:23 by hdelacou         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
 # ============================================================================ #
-#                                  COLORS                                      #
+#                                  SETTINGS                                    #
 # ============================================================================ #
 
-DEF_COLOR	= \033[0;39m
-GRAY		= \033[0;90m
-RED			= \033[0;91m
-GREEN		= \033[0;92m
-YELLOW		= \033[0;93m
-BLUE		= \033[0;94m
-MAGENTA		= \033[0;95m
-CYAN		= \033[0;96m
-WHITE		= \033[0;97m
-BOLD		= \033[1m
-ITALIC		= \033[3m
-UNDERLINE	= \033[4m
+NAME        := ircserv
 
-# ============================================================================ #
-#                                 VARIABLES                                    #
-# ============================================================================ #
+# Compiler and Flags
+CXX         := c++
+CXXFLAGS    := -Wall -Wextra -Werror -std=c++98 -g3
+DEPFLAGS    := -MMD -MP
 
-NAME		= ircserv
-CXX			= c++
-CXXFLAGS	= -Wall -Wextra -Werror -std=c++98
-RM			= rm -f
-RMDIR		= rm -rf
-
-# ============================================================================ #
-#                                 DIRECTORIES                                  #
-# ============================================================================ #
-
-SRCDIR		= srcs
-OBJDIR		= objs
-INCDIR		= includes
+# Directories
+SRCDIR      := srcs
+OBJDIR      := objs
+INCDIR      := includes
 
 # ============================================================================ #
 #                                   SOURCES                                    #
 # ============================================================================ #
 
-# Main
-SRCS		= main.cpp
+# Root sources (srcs/)
+SRCS_ROOT   := main.cpp \
+               User.cpp \
+               Channel.cpp \
+               Utils.cpp \
+               IrcReplies.cpp
 
-# Core classes
-SRCS		+= User.cpp \
-			   Channel.cpp \
-			   Utils.cpp \
-			   IrcReplies.cpp
+# Combine sources with paths
+SRCS        := $(addprefix $(SRCDIR)/, $(SRCS_ROOT))
 
-# Server files
-SRCS		+= server/Server.cpp \
-			   server/handleUser.cpp \
-			   server/Join.cpp \
-			   server/Part.cpp \
-			   server/Kick.cpp \
-			   server/Topic.cpp \
-			   server/Invite.cpp \
-			   server/Mode.cpp \
-			   server/message.cpp \
-			   server/Replay.cpp \
-			   server/DCC.cpp
+# Objects and Dependencies
+OBJS        := $(patsubst $(SRCDIR)/%.cpp, $(OBJDIR)/%.o, $(SRCS))
+DEPS        := $(OBJS:.o=.d)
 
 # ============================================================================ #
-#                                   OBJECTS                                    #
+#                                  COLORS                                      #
 # ============================================================================ #
 
-OBJS		= $(SRCS:%.cpp=$(OBJDIR)/%.o)
-DEPS		= $(OBJS:.o=.d)
+RESET       := \033[0m
+BOLD        := \033[1m
+DIM         := \033[2m
 
-# ============================================================================ #
-#                                ASCII ART                                     #
-# ============================================================================ #
+RED         := \033[91m
+GREEN       := \033[92m
+YELLOW      := \033[93m
+BLUE        := \033[94m
+MAGENTA     := \033[95m
+CYAN        := \033[96m
 
-define IRC_LOGO
-$(CYAN)
-	██╗██████╗  ██████╗    ███████╗███████╗██████╗ ██╗   ██╗███████╗██████╗ 
-	██║██╔══██╗██╔════╝    ██╔════╝██╔════╝██╔══██╗██║   ██║██╔════╝██╔══██╗
-	██║██████╔╝██║         ███████╗█████╗  ██████╔╝██║   ██║█████╗  ██████╔╝
-	██║██╔══██╗██║         ╚════██║██╔══╝  ██╔══██╗╚██╗ ██╔╝██╔══╝  ██╔══██╗
-	██║██║  ██║╚██████╗    ███████║███████╗██║  ██║ ╚████╔╝ ███████╗██║  ██║
-	╚═╝╚═╝  ╚═╝ ╚═════╝    ╚══════╝╚══════╝╚═╝  ╚═╝  ╚═══╝  ╚══════╝╚═╝  ╚═╝
-$(DEF_COLOR)
-endef
-export IRC_LOGO
-
-define CLEAN_MSG
-$(YELLOW)
-	╔═══════════════════════════════════════════════════════════╗
-	║                    🧹 CLEANING OBJECTS                    ║
-	╚═══════════════════════════════════════════════════════════╝
-$(DEF_COLOR)
-endef
-export CLEAN_MSG
-
-define FCLEAN_MSG
-$(RED)
-	╔═══════════════════════════════════════════════════════════╗
-	║                  🗑️  FULL CLEAN COMPLETE                  ║
-	╚═══════════════════════════════════════════════════════════╝
-$(DEF_COLOR)
-endef
-export FCLEAN_MSG
-
-define SUCCESS_MSG
-$(GREEN)
-	╔═══════════════════════════════════════════════════════════╗
-	║              ✨ COMPILATION SUCCESSFUL ✨                 ║
-	║                                                           ║
-	║              Ready to launch: ./$(NAME)                   ║
-	╚═══════════════════════════════════════════════════════════╝
-$(DEF_COLOR)
-endef
-export SUCCESS_MSG
+# Specific colors for output
+PREFIX      := $(BOLD)$(CYAN)[IRC]$(RESET)
+SUCCESS     := $(BOLD)$(GREEN)✓$(RESET)
+FAILURE     := $(BOLD)$(RED)✗$(RESET)
 
 # ============================================================================ #
 #                                   RULES                                      #
@@ -130,62 +71,58 @@ export SUCCESS_MSG
 all: $(NAME)
 
 $(NAME): $(OBJS)
-	@echo "$(BLUE)$(BOLD)⚡ Linking $(NAME)...$(DEF_COLOR)"
+	@echo "$(PREFIX) Linking objects..."
 	@$(CXX) $(CXXFLAGS) $(OBJS) -o $(NAME)
-	@echo "$$IRC_LOGO"
-	@echo "$$SUCCESS_MSG"
+	@echo "$(PREFIX) $(SUCCESS) Build complete! Run with ./$(NAME) <port> <password>"
 
+# Compile source files
 $(OBJDIR)/%.o: $(SRCDIR)/%.cpp
 	@mkdir -p $(dir $@)
-	@echo "$(CYAN)📦 Compiling: $(GRAY)$<$(DEF_COLOR)"
-	@$(CXX) $(CXXFLAGS) -I$(INCDIR) -MMD -MP -c $< -o $@
+	@printf "$(PREFIX) $(CYAN)[%2d/%2d]$(RESET) Compiling $(BOLD)$(YELLOW)%-30s$(RESET) " \
+		$$(expr $$(find $(OBJDIR) -name '*.o' 2>/dev/null | wc -l) + 1) \
+		$$(echo $(SRCS) | wc -w) "$(notdir $<)"
+	@$(CXX) $(CXXFLAGS) $(DEPFLAGS) -I$(INCDIR) -c $< -o $@ \
+		&& echo "$(SUCCESS)" || (echo "$(FAILURE)" && exit 1)
 
+# Include dependencies
 -include $(DEPS)
 
+# Clean objects
 clean:
-	@echo "$$CLEAN_MSG"
-	@$(RMDIR) $(OBJDIR)
-	@echo "$(GREEN)✓ Object files removed$(DEF_COLOR)"
+	@echo "$(PREFIX) Cleaning object files..."
+	@rm -rf $(OBJDIR)
+	@echo "$(PREFIX) $(SUCCESS) Objects cleaned."
 
+# Full clean
 fclean: clean
-	@$(RM) $(NAME)
-	@echo "$$FCLEAN_MSG"
+	@echo "$(PREFIX) Removing executable..."
+	@rm -f $(NAME)
+	@echo "$(PREFIX) $(SUCCESS) Executable removed."
 
+# Rebuild
 re: fclean all
 
-.PHONY: all clean fclean re
+# Bonus (same as all for now)
+bonus: all
 
 # ============================================================================ #
-#                                INFO & HELP                                   #
+#                                   UTILS                                      #
 # ============================================================================ #
 
+# Debugging helper
 info:
-	@echo "$(CYAN)$(BOLD)"
-	@echo "╔════════════════════════════════════════════════════════════════╗"
-	@echo "║                    IRC SERVER - PROJECT INFO                   ║"
-	@echo "╠════════════════════════════════════════════════════════════════╣"
-	@echo "║ $(WHITE)Name:$(CYAN)          $(NAME)                                         ║"
-	@echo "║ $(WHITE)Compiler:$(CYAN)      $(CXX)                                             ║"
-	@echo "║ $(WHITE)Flags:$(CYAN)         $(CXXFLAGS)                ║"
-	@echo "║ $(WHITE)Sources:$(CYAN)       $(words $(SRCS)) files                                        ║"
-	@echo "║ $(WHITE)Objects:$(CYAN)       $(words $(OBJS)) files                                        ║"
-	@echo "╚════════════════════════════════════════════════════════════════╝"
-	@echo "$(DEF_COLOR)"
+	@echo "$(PREFIX) Source files: $(words $(SRCS))"
+	@echo "$(PREFIX) Object dir:   $(OBJDIR)"
+	@echo "$(PREFIX) Compiler:     $(CXX) $(CXXFLAGS)"
 
 help:
-	@echo "$(MAGENTA)$(BOLD)"
-	@echo "╔════════════════════════════════════════════════════════════════╗"
-	@echo "║                       MAKEFILE COMMANDS                        ║"
-	@echo "╠════════════════════════════════════════════════════════════════╣"
-	@echo "║ $(WHITE)make$(MAGENTA)          - Compile the project                            ║"
-	@echo "║ $(WHITE)make clean$(MAGENTA)    - Remove object files                            ║"
-	@echo "║ $(WHITE)make fclean$(MAGENTA)   - Remove all generated files                     ║"
-	@echo "║ $(WHITE)make re$(MAGENTA)       - Rebuild the entire project                     ║"
-	@echo "║ $(WHITE)make info$(MAGENTA)     - Display project information                    ║"
-	@echo "║ $(WHITE)make help$(MAGENTA)     - Display this help message                      ║"
-	@echo "╠════════════════════════════════════════════════════════════════╣"
-	@echo "║ $(YELLOW)Usage:$(MAGENTA) ./$(NAME) <port> <password>                             ║"
-	@echo "╚════════════════════════════════════════════════════════════════╝"
-	@echo "$(DEF_COLOR)"
+	@echo "$(PREFIX) Available targets:"
+	@echo "$(PREFIX) $(YELLOW)all$(RESET) - Build the project"
+	@echo "$(PREFIX) $(YELLOW)clean$(RESET) - Clean object files"
+	@echo "$(PREFIX) $(YELLOW)fclean$(RESET) - Full clean (remove executable and object files)"
+	@echo "$(PREFIX) $(YELLOW)re$(RESET) - Rebuild the project"
+	@echo "$(PREFIX) $(YELLOW)bonus$(RESET) - Build the bonus"
+	@echo "$(PREFIX) $(YELLOW)info$(RESET) - Display build information"
+	@echo "$(PREFIX) $(YELLOW)help$(RESET) - Display this help message"
 
-.PHONY: info help
+.PHONY: all clean fclean re bonus info
