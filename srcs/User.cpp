@@ -6,9 +6,22 @@
 /*   By: hdelacou <hdelacou@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/12/16 04:10:00 by hdelacou          #+#    #+#             */
-/*   Updated: 2025/12/16 05:49:12 by hdelacou         ###   ########.fr       */
+/*   Updated: 2025/12/16 06:18:26 by hdelacou         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
+
+/*
+** ============================================================================
+**                              USER AUTHENTICATION
+** ============================================================================
+**
+**     PASS → NICK → USER → [All set?] → isRegister = true → Welcome!
+**
+**  Registration requires 3 flags: hasPass, hasNickname, hasUsername
+**  tryRegisterUser() validates all flags before marking user as registered
+**
+** ============================================================================
+*/
 
 #include "../includes/User.hpp"
 
@@ -122,69 +135,3 @@ void User::tryRegisterUser()
 	}
 }
 
-/*
-** ============================================================================
-**                         USER CLASS - IRC USER MANAGEMENT
-** ============================================================================
-**
-**                       User Registration Flow
-**                              |
-**                              v
-**                    +-------------------+
-**                    |   Connection Est. |
-**                    +-------------------+
-**                              |
-**                              | PASS <password>
-**                              v
-**                    +-------------------+
-**                    |  Set Password Flag|
-**                    +-------------------+
-**                              |
-**                              | NICK <nickname>
-**                              v
-**                    +-------------------+
-**                    |  Set Nickname     |
-**                    +-------------------+
-**                              |
-**                              | USER <username> ...
-**                              v
-**                    +-------------------+
-**                    |  Set Username     |
-**                    +-------------------+
-**                              |
-**                              v
-**                    +-------------------+
-**                    | tryRegisterUser() |
-**                    +-------------------+
-**                         /         \
-**                All flags set    Missing flag
-**                     |                |
-**                     v                v
-**            +---------------+  Wait for remaining
-**            | isRegister =  |  registration commands
-**            |     true      |
-**            +---------------+
-**                     |
-**                     v
-**            +---------------+
-**            | Send Welcome  |
-**            | Message       |
-**            +---------------+
-**
-**  CLASS MEMBERS:
-**  - nickname: User's chosen nickname
-**  - username: User's username from USER command
-**  - fd: File descriptor for user's socket connection
-**  - hasNickname: Flag indicating NICK command received
-**  - hasUsername: Flag indicating USER command received
-**  - hasPass: Flag indicating PASS command received (valid password)
-**  - isRegister: Flag indicating full registration complete
-**  - welcomeMessage: Flag indicating welcome message sent
-**
-**  KEY METHODS:
-**  - tryRegisterUser(): Checks if all registration flags are set
-**  - closeConnection(): Closes the user's socket connection
-**  - Getters/Setters for all member variables
-**
-** ============================================================================
-*/

@@ -6,9 +6,23 @@
 /*   By: hdelacou <hdelacou@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/12/16 05:19:55 by hdelacou          #+#    #+#             */
-/*   Updated: 2025/12/16 05:41:58 by hdelacou         ###   ########.fr       */
+/*   Updated: 2025/12/16 06:16:54 by hdelacou         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
+
+/*
+** ============================================================================
+**                           CHANNEL MODES & PERMISSIONS
+** ============================================================================
+**
+**  Modes: +i (invite-only) | +t (topic-op-only) | +k (key) | +l (limit)
+**
+**  canJoin() checks: invited? → key match? → under limit?
+**  First member becomes host & operator
+**  Operators control: topic (+t), MODE changes, KICK, INVITE
+**
+** ============================================================================
+*/
 
 #include "../includes/Channel.hpp"
 
@@ -368,75 +382,3 @@ bool Channel::hasPerm(const int &clientFd) const {
 	return (false);
 }
 
-/*
-** ============================================================================
-**                    CHANNEL CLASS - IRC CHANNEL MANAGEMENT
-** ============================================================================
-**
-**                       Channel Lifecycle
-**                              |
-**                              v
-**                    +-------------------+
-**                    |   User JOINs      |
-**                    |   Channel         |
-**                    +-------------------+
-**                              |
-**                              v
-**                    +-------------------+
-**                    | Check canJoin()   |
-**                    +-------------------+
-**                    /         |         \
-**            Invite-only   Has Key    User Limit
-**                 |           |           |
-**                 v           v           v
-**           Check invited  Verify key   Check count
-**                 |           |           |
-**                 +-----+-----+-----+-----+
-**                             |
-**                        All checks pass
-**                             |
-**                             v
-**                    +-------------------+
-**                    |  addMember(fd)    |
-**                    +-------------------+
-**                             |
-**                             v
-**                    +-------------------+
-**                    | First member?     |
-**                    +-------------------+
-**                     Yes /          \ No
-**                       /              \
-**                      v                v
-**              +-------------+    +-------------+
-**              | Make host & |    | Regular     |
-**              | operator    |    | member      |
-**              +-------------+    +-------------+
-**
-**  CHANNEL MODES:
-**  +i : Invite-only - Users must be invited to join
-**  +t : Topic operator-only - Only operators can change topic
-**  +k : Key (password) - Channel requires password to join
-**  +l : User limit - Maximum number of users allowed
-**
-**  CLASS MEMBERS:
-**  - name: Channel name (starts with # or &)
-**  - topic: Current channel topic
-**  - host: File descriptor of channel creator
-**  - key: Channel password (if +k mode is set)
-**  - invite_only: Flag for +i mode
-**  - topic_op_only: Flag for +t mode
-**  - has_key: Flag indicating if +k mode is set
-**  - user_limit: Maximum users (0 = no limit)
-**  - operators: Set of user fds with operator privileges
-**  - users: Set of all member user fds
-**  - invited: Set of user fds invited to channel
-**
-**  KEY METHODS:
-**  - canJoin(): Validates if a user can join based on modes
-**  - addMember()/removeMember(): Manage channel membership
-**  - addOperator()/removeOperator(): Manage operator privileges
-**  - setTopic(): Change channel topic (with permission check)
-**  - invite(): Add user to invite list
-**
-** ============================================================================
-*/

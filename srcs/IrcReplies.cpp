@@ -6,16 +6,22 @@
 /*   By: hdelacou <hdelacou@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/12/16 04:10:00 by hdelacou          #+#    #+#             */
-/*   Updated: 2025/12/16 05:29:37 by hdelacou         ###   ########.fr       */
+/*   Updated: 2025/12/16 06:17:20 by hdelacou         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 /*
 ** ============================================================================
-**                     IRC ERROR AND REPLY FUNCTIONS
+**                         IRC NUMERIC REPLIES - RFC 1459
 ** ============================================================================
-**  Centralized error and reply functions for IRC server
-**  All numeric replies are defined in IrcReplies.hpp
+**
+**  Format: :<server> <code> <nick> [params] :<message>
+**
+**  ERR_* (4xx-5xx): Errors (NOSUCHNICK, NICKNAMEINUSE, etc.)
+**  RPL_* (2xx-3xx): Success replies (AWAY, ENDOFWHOIS, etc.)
+**
+**  All replies centralized here for consistency and RFC compliance
+**
 ** ============================================================================
 */
 
@@ -230,89 +236,3 @@ void Server::sendERR_NOSUCHCHANNEL(const int &clientFd, const std::string &chann
 	sendNumericReply(clientFd, 403, channel, "No such channel");
 }
 
-/*
-** ============================================================================
-**                     IRC NUMERIC REPLIES - RFC 1459/2812
-** ============================================================================
-**
-**                  Numeric Reply Message Flow
-**                              |
-**                              v
-**                    +-------------------+
-**                    | Client sends      |
-**                    | IRC command       |
-**                    +-------------------+
-**                              |
-**                              v
-**                    +-------------------+
-**                    | Server processes  |
-**                    | command           |
-**                    +-------------------+
-**                     /                 \
-**               Success               Failure
-**                   |                     |
-**                   v                     v
-**          +---------------+      +---------------+
-**          | Send RPL_*    |      | Send ERR_*    |
-**          | (2xx-3xx)     |      | (4xx-5xx)     |
-**          +---------------+      +---------------+
-**                   |                     |
-**                   +----------+----------+
-**                              |
-**                              v
-**                    +-------------------+
-**                    | Format numeric    |
-**                    | reply message     |
-**                    +-------------------+
-**                              |
-**                              v
-**                    +-------------------+
-**                    | Send to client    |
-**                    +-------------------+
-**
-**  NUMERIC REPLY FORMAT:
-**  :<server> <code> <nick> [params] :<message>
-**
-**  Example: :irc.server.com 001 john :Welcome to IRC
-**
-**  ERROR CODES (4xx-5xx):
-**  ERR_NOSUCHNICK (401)       - No such nick/channel
-**  ERR_NOSUCHSERVER (402)     - No such server
-**  ERR_NORECIPIENT (411)      - No recipient given
-**  ERR_NOTEXTTOSEND (412)     - No text to send
-**  ERR_NONICKNAMEGIVEN (431)  - No nickname given
-**  ERR_ERRONEUSNICKNAME (432) - Erroneous nickname
-**  ERR_NICKNAMEINUSE (433)    - Nickname already in use
-**  ERR_NOTONCHANNEL (442)     - Not on that channel
-**  ERR_NOTREGISTERED (451)    - Not registered
-**  ERR_NEEDMOREPARAMS (461)   - Not enough parameters
-**  ERR_ALREADYREGISTRED (462) - Already registered
-**  ERR_PASSWDMISMATCH (464)   - Password incorrect
-**  ERR_CHANNELISFULL (471)    - Cannot join (+l full)
-**  ERR_INVITEONLYCHAN (473)   - Cannot join (+i invite)
-**  ERR_BANNEDFROMCHAN (474)   - Cannot join (+b banned)
-**  ERR_BADCHANNELKEY (475)    - Cannot join (+k bad key)
-**  ERR_BADCHANMASK (476)      - Bad channel mask
-**  ERR_NOPRIVILEGES (481)     - Not IRC operator
-**  ERR_CHANOPRIVSNEEDED (482) - Not channel operator
-**  ERR_CANTKILLSERVER (483)   - Can't kill server
-**  ERR_NOOPERHOST (491)       - No O-lines for host
-**
-**  REPLY CODES (2xx-3xx):
-**  RPL_AWAY (301)             - User is away
-**  RPL_UNAWAY (305)           - No longer away
-**  RPL_NOWAWAY (306)          - Marked as away
-**  RPL_ENDOFWHOIS (318)       - End of WHOIS list
-**  RPL_LISTEND (323)          - End of LIST
-**  RPL_ENDOFNAMES (366)       - End of NAMES list
-**  RPL_YOUREOPER (381)        - Now IRC operator
-**  RPL_REHASHING (382)        - Rehashing config
-**
-**  IMPLEMENTATION NOTES:
-**  - All replies use sendNumericReply() for consistent formatting
-**  - Numeric codes are defined in IrcReplies.hpp
-**  - Messages are defined as MSG_* constants in IrcReplies.hpp
-**  - Replies automatically include server name and client nickname
-**
-** ============================================================================
-*/

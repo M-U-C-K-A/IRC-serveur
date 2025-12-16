@@ -6,9 +6,22 @@
 /*   By: hdelacou <hdelacou@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/12/16 04:10:00 by hdelacou          #+#    #+#             */
-/*   Updated: 2025/12/16 05:22:45 by hdelacou         ###   ########.fr       */
+/*   Updated: 2025/12/16 06:17:42 by hdelacou         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
+
+/*
+** ============================================================================
+**                          IRC SERVER ENTRY POINT
+** ============================================================================
+**
+**  Usage: ./ircserv <port> <password>
+**
+**  Startup: Validate args → Setup signals → initServer() → runServer()
+**  Signals: SIGINT/SIGQUIT handled for graceful shutdown
+**
+** ============================================================================
+*/
 
 #include <iostream>
 #include <cstdlib>
@@ -70,69 +83,3 @@ int main(int ac, char **av) {
 	}
 	return (EXIT_SUCCESS);
 }
-
-/*
-** ============================================================================
-**                         IRC SERVER - MAIN ENTRY POINT
-** ============================================================================
-**
-**                       Server Startup Flow
-**                              |
-**                              v
-**                    +-------------------+
-**                    | Validate Args     |
-**                    | - Port range      |
-**                    | - Password length |
-**                    +-------------------+
-**                              |
-**                       Valid  |  Invalid
-**                              v
-**                    +-------------------+
-**                    | Setup Signals     |
-**                    | - SIGINT          |
-**                    | - SIGQUIT         |
-**                    +-------------------+
-**                              |
-**                              v
-**                    +-------------------+
-**                    | Create Server     |
-**                    | Instance          |
-**                    +-------------------+
-**                              |
-**                              v
-**                    +-------------------+
-**                    | initServer()      |
-**                    | - Create socket   |
-**                    | - Setup epoll     |
-**                    +-------------------+
-**                              |
-**                              v
-**                    +-------------------+
-**                    | runServer()       |
-**                    | - Event loop      |
-**                    | - Handle clients  |
-**                    +-------------------+
-**                              |
-**                    Signal received or error
-**                              |
-**                              v
-**                    +-------------------+
-**                    | Graceful Shutdown |
-**                    +-------------------+
-**
-**  COMMAND LINE USAGE:
-**  ./ircserv <port> <password>
-**
-**  PARAMETERS:
-**  - port: Port number (must be between 1024 and 65535)
-**  - password: Server password (max 18 characters)
-**
-**  EXAMPLE:
-**  ./ircserv 6667 mySecretPassword
-**
-**  SIGNAL HANDLING:
-**  - SIGINT (Ctrl+C): Graceful shutdown
-**  - SIGQUIT: Graceful shutdown
-**
-** ============================================================================
-*/

@@ -6,9 +6,23 @@
 /*   By: hdelacou <hdelacou@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/12/16 04:10:00 by hdelacou          #+#    #+#             */
-/*   Updated: 2025/12/16 05:47:38 by hdelacou         ###   ########.fr       */
+/*   Updated: 2025/12/16 06:19:27 by hdelacou         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
+
+/*
+** ============================================================================
+**                      IRC SERVER - CORE EVENT LOOP
+** ============================================================================
+**
+**  Architecture: epoll() multiplexing + non-blocking I/O
+**
+**  Flow: initSocket() → initEpoll() → runServer() event loop
+**  Events: New connection → acceptUser() | Data ready → parseInput()
+**  Commands: Routed via handleLine() to specific handlers
+**
+** ============================================================================
+*/
 
 #include "../includes/Server.hpp"
 
@@ -474,193 +488,3 @@ msg += SERVER_NAME;
 msg += " 421 * " + command + " :Unknown command\r\n";
 send(clientFd, msg.c_str(), msg.length(), 0);
 }
-
-/*
-** ============================================================================
-**                    IRC SERVER - ARCHITECTURE & FLOW
-** ============================================================================
-**
-**                      Server Initialization Flow
-**                              |
-**                              v
-**                    +-------------------+
-**                    | initServer()      |
-**                    +-------------------+
-**                         /         \
-**                        /           \
-**                       v             v
-**              initSocket()      initEpoll()
-**                       |             |
-**                   AF_INET       epoll_create1()
-**                   SOCK_STREAM   EPOLL_CTL_ADD
-**                   SO_REUSEADDR
-**                   O_NONBLOCK
-**                       |             |
-**                       +------+------+
-**                              |
-**                              v
-**                    +-------------------+
-**                    | runServer()       |
-**                    | Main Event Loop   |
-**                    +-------------------+
-**                              |
-**                    +---------+---------+
-**                    |                   |
-**                    v                   v
-**          New Connection       Existing Connection
-**                    |                   |
-**              acceptUser()        parseInput()
-**                    |                   |
-**                    v                   v
-**          Add to epoll          handleLine()
-**          Create User                   |
-**                                        v
-**                              +-------------------+
-**                              | Command Routing   |
-**                              +-------------------+
-**                                        |
-**        +---------------+---------------+---------------+
-**        |               |               |               |
-**        v               v               v               v
-**  Registration      Channel         Messaging       Query
-**  - PASS            - JOIN          - PRIVMSG       - WHO
-**  - NICK            - PART          - NOTICE        - WHOIS
-**  - USER            - KICK          - PING
-**  - CAP             - TOPIC         - PONG
-**                    - MODE
-**                    - INVITE
-**
-**  SERVER ARCHITECTURE:
-**  +------------------------------------------------------------------+
-**  |                         IRC Server                                |
-**  +------------------------------------------------------------------+
-**  |                                                                   |
-**  |  [Server Core]                    [User Management]              |
-**  |  - port                           - std::map<int, User> Users    |
-**  |  - socketfd                       - User registration tracking   |
-**  |  - password                       - Nickname uniqueness          |
-**  |  - epollFd                                                        |
-**  |                                                                   |
-**  |  [Channel Management]             [Event Handling]               |
-**  |  - std::vector<Channel> channels  - epoll() for multiplexing     |
-**  |  - Channel modes (+i,+t,+k,+l)    - Non-blocking I/O             |
-**  |  - Operator management            - Edge-triggered events         |
-**  |  - Invite lists                                                   |
-**  |                                                                   |
-**  +------------------------------------------------------------------+
-**
-**  EVENT LOOP (runServer):
-**  
-**  while (running) {
-**      epoll_wait() --> events[]
-**          |
-**          +---> For each event:
-**                  |
-**                  +---> socketfd? --> acceptUser()
-**                  |                       |
-**                  |                       +---> create User object
-**                  |                       +---> add to epoll
-**                  |
-**                  +---> client fd? --> parseInput()
-**                                          |
-**                                          +---> recv() data
-**                                          +---> handleLine()
-**  }
-**
-**  COMMAND PROCESSING FLOW:
-**  
-**  handleLine(clientFd, line)
-**      |
-**      +---> Parse command name
-**      |
-**      +---> Convert to uppercase
-**      |
-**      +---> Check registration status (except PASS, NICK, USER, CAP)
-**      |
-**      +---> Route to handler:
-**              |
-**              +---> CAP       --> handleCap()
-**              +---> PASS      --> handlePass()
-**              +---> NICK      --> handleNick()
-**              +---> USER      --> handleUsername()
-**              +---> JOIN      --> handleJoin()
-**              +---> PART      --> handlePart()
-**              +---> PRIVMSG   --> handlePrivateMessage()
-**              +---> NOTICE    --> handleNotice()
-**              +---> TOPIC     --> handleTopic()
-**              +---> KICK      --> handleKick()
-**              +---> INVITE    --> handleInvite()
-**              +---> MODE      --> handleMode()
-**              +---> WHO       --> handleWho()
-**              +---> PING      --> handlePing()
-**              +---> PONG      --> handlePong()
-**              +---> QUIT      --> disconnect client
-**              +---> Unknown   --> sendERR_UNKNOWNCOMMAND()
-**
-**  USER REGISTRATION:
-**  1. Client connects --> acceptUser()
-**  2. PASS <password> --> handlePass() --> setHasPass()
-**  3. NICK <nickname> --> handleNick() --> setHasNickname()
-**  4. USER <username> --> handleUsername() --> setHasUsername()
-**  5. checkUserRegistration() --> if all flags set:
-**        - setIsRegister(true)
-**        - Send 001 RPL_WELCOME
-**
-**  CHANNEL OPERATIONS:
-**  
-**  JOIN #channel [key]
-**      |
-**      +---> channelExists()?
-**              |
-**              Yes --> joinExistingChannel()
-**              |           |
-**              |           +---> canJoin() checks:
-**              |           |       - Invite-only (+i)
-**              |           |       - Key required (+k)
-**              |           |       - User limit (+l)
-**              |           |
-**              |           +---> addMember()
-**              |           +---> notifyJoin()
-**              |
-**              No --> createChannel()
-**                      |
-**                      +---> New Channel object
-**                      +---> Creator becomes operator
-**                      +---> Send RPL_TOPIC, RPL_NAMREPLY
-**
-**  MESSAGE ROUTING:
-**  
-**  PRIVMSG <target> :<message>
-**      |
-**      +---> target starts with '#' or '&'?
-**              |
-**              Yes --> Channel message
-**              |       |
-**              |       +---> isMember()?
-**              |       +---> broadcastToChannel()
-**              |
-**              No --> Private message
-**                      |
-**                      +---> findIdByName(target)
-**                      +---> sendPrivateMessage()
-**
-**  ERROR HANDLING:
-**  - All errors sent via IrcReplies.cpp functions
-**  - Numeric codes (401-599) for errors
-**  - Numeric codes (001-399) for successful replies
-**  - Format: :<server> <code> <nick> [params] :<message>
-**
-**  SIGNAL HANDLING:
-**  - SIGINT (Ctrl+C) --> signalHandler() --> running = false
-**  - SIGQUIT --> signalHandler() --> running = false
-**  - Graceful shutdown closes all connections
-**
-**  KEY IMPLEMENTATION DETAILS:
-**  - Epoll: Edge-triggered (EPOLLET) for efficiency
-**  - Non-blocking I/O: All sockets set O_NONBLOCK
-**  - Buffer management: Per-user buffers for incomplete messages
-**  - Protocol: IRC RFC 1459/2812 compliant
-**  - CRLF termination: All messages end with \r\n
-**
-** ============================================================================
-*/
