@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Nick.cpp                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: hdelacou <hdelacou@student.42.fr>          +#+  +:+       +#+        */
+/*   By: adrien <adrien@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/12/16 04:06:15 by hdelacou          #+#    #+#             */
-/*   Updated: 2025/12/16 06:28:33 by hdelacou         ###   ########.fr       */
+/*   Updated: 2026/01/15 07:55:05 by adrien           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,8 +28,8 @@ bool Server::isValidNickname(const std::string &nickname) {
 		return false;
 	for (size_t i = 0; i < nickname.length(); i++) {
 		char c = nickname[i];
-		if (!isalnum(c) && c != '[' && c != ']' && c != '\\' && 
-		    c != '`' && c != '_' && c != '^' && c != '{' && 
+		if (!isalnum(c) && c != '[' && c != ']' && c != '\\' &&
+		    c != '`' && c != '_' && c != '^' && c != '{' &&
 		    c != '|' && c != '}' && c != '-')
 			return false;
 	}
@@ -45,7 +45,7 @@ bool Server::isValidNickname(const std::string &nickname) {
 * @return true if taken, false if available
 */
 bool Server::isNicknameTaken(const std::string &nickname, const int &clientFd) {
-	for (std::map<int, User>::iterator it = this->Users.begin(); 
+	for (std::map<int, User>::iterator it = this->Users.begin();
 	     it != this->Users.end(); ++it) {
 		if (it->first == clientFd)
 			continue;
@@ -83,11 +83,14 @@ void Server::handleNick(const int &clientFd, const std::string &line) {
 
 	this->Users[clientFd].setNickname(newNick);
 
+	this->Users[clientFd].setHasNickname(true);
+	this->Users[clientFd].tryRegisterUser();
+
 	if (!oldNick.empty()) {
 		broadcastNickChange(clientFd, oldNick, newNick);
 	}
 
-	std::cout << "Nickname set: " << oldNick << " -> " << newNick 
+	std::cout << "Nickname set: " << oldNick << " -> " << newNick
 	          << " (fd: " << clientFd << ")" << std::endl;
 
 	checkUserRegistration(clientFd);
@@ -100,7 +103,7 @@ void Server::handleNick(const int &clientFd, const std::string &line) {
 * @param newNick the new nickname
 * @return void
 */
-void Server::broadcastNickChange(const int &clientFd, 
+void Server::broadcastNickChange(const int &clientFd,
                                   const std::string &oldNick,
                                   const std::string &newNick) {
 	std::string message = ":";
@@ -116,7 +119,7 @@ void Server::broadcastNickChange(const int &clientFd,
 	std::set<int> notified; // Track who we've notified
 	notified.insert(clientFd);
 
-	for (std::vector<Channel>::iterator chan = channelList.begin(); 
+	for (std::vector<Channel>::iterator chan = channelList.begin();
 	     chan != channelList.end(); ++chan) {
 		if (chan->isMember(clientFd)) {
 			const std::vector<int> &members = chan->getAllMembers();

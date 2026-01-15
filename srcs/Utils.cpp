@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Utils.cpp                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: hdelacou <hdelacou@student.42.fr>          +#+  +:+       +#+        */
+/*   By: adrien <adrien@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/12/16 06:12:15 by hdelacou          #+#    #+#             */
-/*   Updated: 2025/12/16 06:22:41 by hdelacou         ###   ########.fr       */
+/*   Updated: 2026/01/15 07:58:37 by adrien           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,6 +32,10 @@
 const std::string getParam(int cmdLength, const std::string &line)
 {
 	std::string args = line.substr(cmdLength);
+	size_t start = args.find_first_not_of(' ');
+	if (start == std::string::npos)
+		return "";
+	args = args.substr(start);
 	std::string firstParam = args.substr(0, args.find(' '));
 	return (firstParam);
 }
