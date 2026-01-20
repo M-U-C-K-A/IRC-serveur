@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   IrcReplies.cpp                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: hdelacou <hdelacou@student.42.fr>          +#+  +:+       +#+        */
+/*   By: adrien <adrien@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/12/16 04:10:00 by hdelacou          #+#    #+#             */
-/*   Updated: 2025/12/16 06:22:22 by hdelacou         ###   ########.fr       */
+/*   Updated: 2026/01/21 00:51:49 by adrien           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -234,4 +234,71 @@ void Server::sendError(const int &clientFd, const std::string &message)
 void Server::sendERR_NOSUCHCHANNEL(const int &clientFd, const std::string &channel)
 {
 	sendNumericReply(clientFd, 403, channel, "No such channel");
+}
+
+/* ERR_CANNOTSENDTOCHAN (404): Cannot send to channel */
+void Server::sendERR_CANNOTSENDTOCHAN(const int &clientFd, const std::string &channel)
+{
+	sendNumericReply(clientFd, 404, channel, "Cannot send to channel");
+}
+
+/* ERR_USERNOTINCHANNEL (441): They aren't on that channel */
+void Server::sendERR_USERNOTINCHANNEL(const int &clientFd, const std::string &nick, const std::string &channel)
+{
+	sendNumericReply(clientFd, 441, nick + " " + channel, "They aren't on that channel");
+}
+
+/* ERR_USERONCHANNEL (443): is already on channel */
+void Server::sendERR_USERONCHANNEL(const int &clientFd, const std::string &user, const std::string &channel)
+{
+	sendNumericReply(clientFd, 443, user + " " + channel, "is already on channel");
+}
+
+/* ERR_UNKNOWNMODE (472): is unknown mode char to me */
+void Server::sendERR_UNKNOWNMODE(const int &clientFd, char c)
+{
+	std::string charStr(1, c);
+	sendNumericReply(clientFd, 472, charStr, "is unknown mode char to me");
+}
+
+/* RPL_TOPIC (332): Channel topic */
+void Server::sendRPL_TOPIC(const int &clientFd, const Channel &channel)
+{
+	std::string nick = this->Users[clientFd].getNickname();
+	if (nick.empty()) nick = "*";
+
+	std::string response = ":" + std::string(SERVER_NAME) + " 332 " + nick + " " +
+	                       channel.getName() + " :" + channel.getTopic() + IRC_CRLF;
+	send(clientFd, response.c_str(), response.length(), 0);
+}
+
+/* RPL_NOTOPIC (331): No topic is set */
+void Server::sendRPL_NOTOPIC(const int &clientFd, const Channel &channel)
+{
+	std::string nick = this->Users[clientFd].getNickname();
+	if (nick.empty()) nick = "*";
+
+	std::string response = ":" + std::string(SERVER_NAME) + " 331 " + nick + " " +
+	                       channel.getName() + " :No topic is set" + IRC_CRLF;
+	send(clientFd, response.c_str(), response.length(), 0);
+}
+
+/* RPL_NAMREPLY (353): Names list */
+void Server::sendRPL_NAMEREPLY(const int &clientFd, Channel &channel)
+{
+	std::string nick = this->Users[clientFd].getNickname();
+	if (nick.empty()) nick = "*";
+
+	std::string names = "";
+	std::vector<int> members = channel.getAllMembers();
+	for (size_t i = 0; i < members.size(); i++) {
+		if (i > 0) names += " ";
+		if (channel.isOperator(members[i]))
+			names += "@";
+		names += this->Users[members[i]].getNickname();
+	}
+
+	std::string response = ":" + std::string(SERVER_NAME) + " 353 " + nick + " = " +
+	                       channel.getName() + " :" + names + IRC_CRLF;
+	send(clientFd, response.c_str(), response.length(), 0);
 }

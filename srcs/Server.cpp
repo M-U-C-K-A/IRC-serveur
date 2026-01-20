@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Server.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: hdelacou <hdelacou@student.42.fr>          +#+  +:+       +#+        */
+/*   By: adrien <adrien@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/12/16 04:10:00 by hdelacou          #+#    #+#             */
-/*   Updated: 2025/12/16 06:21:42 by hdelacou         ###   ########.fr       */
+/*   Updated: 2026/01/21 00:51:49 by adrien           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -271,6 +271,7 @@ void Server::acceptUser()
 
 /*
  * Parse input from user
+ * Accumulates partial data in per-user buffer until complete command (\r\n)
  * @param userFd the user file descriptor
  * @return void
  */
@@ -287,10 +288,7 @@ void Server::parseInput(int userFd)
 		}
 		else
 		{
-			if (errno != EAGAIN && errno != EWOULDBLOCK)
-			{
-				std::cerr << "[IRC] Error reading from client (fd: " << userFd << ")" << std::endl;
-			}
+			return; // EAGAIN/EWOULDBLOCK - no data available yet
 		}
 
 		epoll_ctl(epollFd, EPOLL_CTL_DEL, userFd, NULL);
@@ -300,9 +298,23 @@ void Server::parseInput(int userFd)
 	}
 
 	buffer[bytesRead] = '\0';
-	std::string line(buffer);
 
-	handleLine(userFd, line);
+	// Accumulate data in per-user buffer for partial command handling
+	Users[userFd].addToBuffer(std::string(buffer));
+
+	// Process only complete commands (ending with \r\n)
+	std::string &userBuffer = Users[userFd].getBufferRef();
+	size_t pos;
+	while ((pos = userBuffer.find("\r\n")) != std::string::npos)
+	{
+		std::string command = userBuffer.substr(0, pos);
+		userBuffer.erase(0, pos + 2);
+
+		if (!command.empty())
+		{
+			handleLine(userFd, command + "\r\n");
+		}
+	}
 }
 
 /*
@@ -519,30 +531,6 @@ void Server::checkUserRegistration(const int &clientFd)
 		send(clientFd, msg.c_str(), msg.length(), 0);
 		user.hasWelcomeMessage();
 	}
-}
-
-/*
- * Handle INVITE command
- * @param clientFd the client file descriptor
- * @param line the command line
- * @return void
- */
-void Server::handleInvite(const int &clientFd, const std::string &line)
-{
-	(void)clientFd;
-	(void)line;
-}
-
-/*
- * Handle MODE command
- * @param clientFd the client file descriptor
- * @param line the command line
- * @return void
- */
-void Server::handleMode(const int &clientFd, const std::string &line)
-{
-	(void)clientFd;
-	(void)line;
 }
 
 /*

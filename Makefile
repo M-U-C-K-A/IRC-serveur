@@ -3,10 +3,10 @@
 #                                                         :::      ::::::::    #
 #    Makefile                                           :+:      :+:    :+:    #
 #                                                     +:+ +:+         +:+      #
-#    By: hdelacou <hdelacou@student.42.fr>          +#+  +:+       +#+         #
+#    By: adrien <adrien@student.42.fr>              +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/12/16 02:31:44 by hdelacou          #+#    #+#              #
-#    Updated: 2025/12/16 04:58:05 by hdelacou         ###   ########.fr        #
+#    Updated: 2026/01/21 00:51:49 by adrien           ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -42,7 +42,9 @@ SRCS_ROOT   := main.cpp \
 SRCS_CHANNEL := commands/channel/Join.cpp \
                 commands/channel/Part.cpp \
                 commands/channel/Kick.cpp \
-                commands/channel/Topic.cpp
+                commands/channel/Topic.cpp \
+                commands/channel/Invite.cpp \
+                commands/channel/Mode.cpp
 
 # ESSENTIAL Messaging - PRIVMSG and NOTICE only
 SRCS_MSG    := commands/messaging/Privmsg.cpp \
