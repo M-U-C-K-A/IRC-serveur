@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 449 40" width="449" height="40" role="img" aria-label="Démarrage rapide : make &amp;&amp; ./ircserv 6667 secret">
+<title>Démarrage rapide</title>
+<defs><clipPath id="c"><rect width="449" height="40" rx="8"/></clipPath></defs>
+<g clip-path="url(#c)">
+<rect width="449" height="40" fill="#21262d"/>
+<rect x="193.6" width="255.4" height="40" fill="#1a7f37"/>
+</g>
+<path d="M18 14.5 L25 20 L18 25.5 Z" fill="#7ee787"/>
+<text x="34" y="24.5" font-family="ui-monospace,SFMono-Regular,'SF Mono',Menlo,Consolas,'Liberation Mono',monospace" font-size="12" font-weight="600" letter-spacing="1.6" fill="#e6edf3">DÉMARRAGE RAPIDE</text>
+<text x="209.6" y="25" font-family="ui-monospace,SFMono-Regular,'SF Mono',Menlo,Consolas,'Liberation Mono',monospace" font-size="13" font-weight="600" fill="#ffffff">make &amp;&amp; ./ircserv 6667 secret</text>
+<rect x=".5" y=".5" width="448" height="39" rx="7.5" fill="none" stroke="#ffffff" stroke-opacity=".08"/>
+</svg>
