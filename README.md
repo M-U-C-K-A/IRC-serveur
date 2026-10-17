@@ -1,5 +1,8 @@
 <p align="center">
-  <img src="docs/assets/hero.svg" alt="ft_irc — un serveur IRC en C++98" width="100%">
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="docs/assets/hero-dark.svg">
+    <img src="docs/assets/hero-light.svg" alt="ft_irc — un serveur IRC en C++98" width="100%">
+  </picture>
 </p>
 
 <p align="center">
