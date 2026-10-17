@@ -223,6 +223,6 @@ ret       ← Entrée
 <p align="center"><img src="docs/assets/divider.svg" alt="" width="100%"></p>
 
 <p align="center">
-  <sub>Projet <b>ft_irc</b> de l'école 42, par <b>hdelacou</b> et <b>adrien</b>.<br>
+  <sub>Projet <b>ft_irc</b> de l'école 42, par <b>hdelacou</b> et <b>abidaux</b>.<br>
   Illustrations dessinées avec le moteur <a href="https://lucasmarkes.com/lab/hairline">Hairline</a>.</sub>
 </p>
